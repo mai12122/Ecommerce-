@@ -3,10 +3,12 @@ services:
     image: postgres:16-alpine
     container_name: ecommerce_db
     restart: unless-stopped
+    env_file:
+      - ./.env
     environment:
-      POSTGRES_DB: ecommerce_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -22,17 +24,13 @@ services:
       context: ./backend
     container_name: ecommerce_backend
     restart: unless-stopped
+    env_file:
+      - ./.env
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DEBUG: "True"
-      ALLOWED_HOSTS: "localhost,127.0.0.1"
-      DB_NAME: ecommerce_db
-      DB_USER: postgres
-      DB_PASSWORD: admin
       DB_HOST: db
-      DB_PORT: "5432"
     ports:
       - "8000:8000"
     volumes:
@@ -44,10 +42,10 @@ services:
       context: ./frontend
     container_name: ecommerce_frontend
     restart: unless-stopped
+    env_file:
+      - ./.env
     depends_on:
       - backend
-    environment:
-      VITE_DJANGO_BASE_URL: http://localhost:8000
     ports:
       - "5173:5173"
     volumes:
