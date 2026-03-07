@@ -99,8 +99,13 @@ export const CartProvider = ({ children }) => {
                 console.error('Error updating cart quantity:', error);
             }
         };
+    const clearCart = () => {
+        setCartItems([]);
+        setTotal(0);
+    };
+
     return (
-        <CartContext.Provider value={{ cartItems, total, addToCart, removeFromCart, updateQuantity, wishlistItems, addToWishlist, removeFromWishlist, isWishlisted }}>
+        <CartContext.Provider value={{ cartItems, total, addToCart, removeFromCart, updateQuantity, clearCart, wishlistItems, addToWishlist, removeFromWishlist, isWishlisted }}>
             {children}
         </CartContext.Provider>
     );

@@ -11,7 +11,16 @@ function ProductDetail() {
   const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const { addToCart, addToWishlist, removeFromWishlist, isWishlisted } = useCart();
-  const sizes = [8, 10, 38, 40];
+
+  const clothingSizes = ['S', 'M', 'L', 'XL', '2XL'];
+  const shoeSizes = Array.from({ length: 8 }, (_, i) => i + 35); // 35-42
+
+  const categoryName = product?.category?.name?.toLowerCase() || '';
+  const categorySlug = product?.category?.slug?.toLowerCase() || '';
+  const isShoeCategory = ['shoe', 'footwear', 'sneaker', 'sandal', 'boot'].some(
+    (term) => categoryName.includes(term) || categorySlug.includes(term)
+  );
+  const sizes = isShoeCategory ? shoeSizes : clothingSizes;
 
   useEffect(() => {
     fetch(`${BASEURL}/api/products/${id}/`)
@@ -95,12 +104,12 @@ function ProductDetail() {
                 {/* Size */}
                 <div className="mt-5">
                     <h2 className="text-base font-bold text-gray-900 mb-3">Size</h2>
-                    <div className="flex gap-3">
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                         {sizes.map((size) => (
                             <button
                                 key={size}
                                 onClick={() => setSelectedSize(size)}
-                                className={`w-11 h-11 rounded-full border-2 text-sm font-medium flex items-center justify-center transition-colors ${
+                                className={`min-w-11 h-11 px-3 rounded-full border-2 text-sm font-medium flex items-center justify-center transition-colors ${
                                     selectedSize === size
                                         ? 'border-purple-600 text-purple-600 bg-purple-50'
                                         : 'border-gray-300 text-gray-600'

@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 function CartPage() {
+    const navigate = useNavigate();
     const { cartItems, total, removeFromCart, updateQuantity } = useCart();
     const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
     const shipping = cartItems.length > 0 ? 15.00 : 0;
@@ -76,7 +78,7 @@ function CartPage() {
                     </div>
 
                     {/* Checkout Button */}
-                    <button className='w-full mt-5 bg-[#1e2a3a] text-white py-4 rounded-full text-base font-semibold flex items-center justify-center gap-2 hover:bg-[#2a3a4e] transition-colors'>
+                    <button onClick={() => navigate('/checkout')} className='w-full mt-5 bg-[#1e2a3a] text-white py-4 rounded-full text-base font-semibold flex items-center justify-center gap-2 hover:bg-[#2a3a4e] transition-colors'>
                         Proceed to Checkout
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
