@@ -20,7 +20,7 @@ docker compose up --build
 
 ## Open App
 - Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8000/api/`
+- Backend API: `http://localhost:8000/api/products/`
 - Django Admin: `http://localhost:8000/admin/`
 # admin password and username
 - username = admin

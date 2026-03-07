@@ -14,4 +14,4 @@ RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["/app/entrypoint.sh"]
+CMD ["sh", "-c", "sed -i 's/\\r$//' /app/entrypoint.sh && sh /app/entrypoint.sh"]
