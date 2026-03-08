@@ -1,0 +1,286 @@
+[
+{
+  "model": "store.category",
+  "pk": 1,
+  "fields": {
+    "name": "Women",
+    "slug": "wmen"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 2,
+  "fields": {
+    "name": "Man",
+    "slug": "man"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 3,
+  "fields": {
+    "name": "Kids",
+    "slug": "kids"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 4,
+  "fields": {
+    "name": "Accessories",
+    "slug": "accessories"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 1,
+  "fields": {
+    "category": 1,
+    "name": "Pajamas",
+    "description": "",
+    "price": "5.00",
+    "image": "products/n1.png",
+    "created_at": "2026-03-07T18:17:02.689Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 2,
+  "fields": {
+    "category": 1,
+    "name": "Short Skirt",
+    "description": "",
+    "price": "10.00",
+    "image": "products/b1.png",
+    "created_at": "2026-03-07T18:17:28.625Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 3,
+  "fields": {
+    "category": 4,
+    "name": "Hat",
+    "description": "",
+    "price": "3.00",
+    "image": "products/a1.png",
+    "created_at": "2026-03-07T18:18:01.806Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 4,
+  "fields": {
+    "category": 1,
+    "name": "Boots",
+    "description": "",
+    "price": "12.00",
+    "image": "products/e2.png",
+    "created_at": "2026-03-07T18:18:30.757Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 5,
+  "fields": {
+    "category": 4,
+    "name": "Star Gloves",
+    "description": "",
+    "price": "2.00",
+    "image": "products/a2.png",
+    "created_at": "2026-03-07T18:19:00.112Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 6,
+  "fields": {
+    "category": 1,
+    "name": "Jorts",
+    "description": "",
+    "price": "7.00",
+    "image": "products/b3.png",
+    "created_at": "2026-03-07T18:19:16.708Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 7,
+  "fields": {
+    "category": 2,
+    "name": "Sweat Pants",
+    "description": "",
+    "price": "5.00",
+    "image": "products/e.png",
+    "created_at": "2026-03-07T18:19:41.737Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 8,
+  "fields": {
+    "category": 2,
+    "name": "Sweaters",
+    "description": "",
+    "price": "4.00",
+    "image": "products/e1.png",
+    "created_at": "2026-03-07T18:20:04.695Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 9,
+  "fields": {
+    "category": 1,
+    "name": "Dress",
+    "description": "",
+    "price": "20.00",
+    "image": "products/c1.png",
+    "created_at": "2026-03-07T18:32:49.104Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 10,
+  "fields": {
+    "category": 2,
+    "name": "Short Sleeve",
+    "description": "",
+    "price": "5.00",
+    "image": "products/s2.png",
+    "created_at": "2026-03-07T18:33:22.265Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 11,
+  "fields": {
+    "category": 2,
+    "name": "Nike Total 90 III (T90)",
+    "description": "",
+    "price": "100.00",
+    "image": "products/f2.png",
+    "created_at": "2026-03-07T18:34:57.079Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 12,
+  "fields": {
+    "category": 2,
+    "name": "Puma Shoes",
+    "description": "",
+    "price": "90.00",
+    "image": "products/f1.png",
+    "created_at": "2026-03-07T18:35:29.663Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 13,
+  "fields": {
+    "category": 3,
+    "name": "Carter's baby-boys 2 Pc Sets",
+    "description": "",
+    "price": "15.00",
+    "image": "products/1.png",
+    "created_at": "2026-03-07T18:40:43.805Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 14,
+  "fields": {
+    "category": 3,
+    "name": "Winter Set",
+    "description": "",
+    "price": "30.00",
+    "image": "products/2.png",
+    "created_at": "2026-03-07T18:42:02.570Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 15,
+  "fields": {
+    "category": 3,
+    "name": "Dress",
+    "description": "",
+    "price": "6.00",
+    "image": "products/3.png",
+    "created_at": "2026-03-07T18:43:06.172Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 16,
+  "fields": {
+    "category": 3,
+    "name": "Short Pajamas",
+    "description": "new born up",
+    "price": "5.00",
+    "image": "products/4.png",
+    "created_at": "2026-03-07T18:44:10.749Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 17,
+  "fields": {
+    "category": 3,
+    "name": "Spiderman Knitted",
+    "description": "",
+    "price": "2.00",
+    "image": "products/6.png",
+    "created_at": "2026-03-07T18:45:42.517Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 18,
+  "fields": {
+    "category": 4,
+    "name": "Knitted Hat",
+    "description": "",
+    "price": "4.00",
+    "image": "products/5.png",
+    "created_at": "2026-03-07T18:46:35.479Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 19,
+  "fields": {
+    "category": 4,
+    "name": "Knitted Hat",
+    "description": "",
+    "price": "6.00",
+    "image": "products/a3.png",
+    "created_at": "2026-03-07T18:47:15.040Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 20,
+  "fields": {
+    "category": 2,
+    "name": "Long Sleeve",
+    "description": "",
+    "price": "7.00",
+    "image": "products/n2.png",
+    "created_at": "2026-03-07T18:48:25.716Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 21,
+  "fields": {
+    "category": 1,
+    "name": "ROMWE",
+    "description": "",
+    "price": "6.00",
+    "image": "products/7.png",
+    "created_at": "2026-03-07T18:49:44.963Z"
+  }
+}
+]
