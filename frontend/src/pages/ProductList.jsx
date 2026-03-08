@@ -48,9 +48,7 @@ function ProductList() {
   }
   return (
     <div className="min-h-screen bg-gray-100 pb-20 md:pb-0">
-        {/* Dark Header */}
         <div className="bg-[#1e2a3a] pt-6 pb-4 px-5">
-            {/* Top Bar */}
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-white text-2xl font-bold">GenZ</h1>
                 <Link to="/cart" className="relative">
@@ -65,7 +63,6 @@ function ProductList() {
                 </Link>
             </div>
             <h2 className="text-white text-lg font-medium mb-3">Discover</h2>
-            {/* Search Bar */}
             <div className="flex items-center bg-white rounded-full px-4 py-2.5 gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -82,8 +79,6 @@ function ProductList() {
                 </svg>
             </div>
         </div>
-
-        {/* Category Pills */}
         <div className="flex gap-3 px-5 py-4 overflow-x-auto no-scrollbar">
             <button
                 onClick={() => setSelectedCategory("All")}
@@ -109,8 +104,6 @@ function ProductList() {
                 </button>
             ))}
         </div>
-
-        {/* Product Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-4 gap-4">
             {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (

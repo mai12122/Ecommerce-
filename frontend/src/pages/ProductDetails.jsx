@@ -13,7 +13,7 @@ function ProductDetail() {
   const { addToCart, addToWishlist, removeFromWishlist, isWishlisted } = useCart();
 
   const clothingSizes = ['S', 'M', 'L', 'XL', '2XL'];
-  const shoeSizes = Array.from({ length: 8 }, (_, i) => i + 35); // 35-42
+  const shoeSizes = Array.from({ length: 8 }, (_, i) => i + 35); 
 
   const categoryName = product?.category?.name?.toLowerCase() || '';
   const categorySlug = product?.category?.slug?.toLowerCase() || '';
@@ -50,14 +50,12 @@ function ProductDetail() {
     }
     return (
         <div className="min-h-screen bg-white pb-24 md:pb-8">
-            {/* Product Image Section */}
             <div className="relative">
                 <img 
                     src={product.image} 
                     alt={product.name} 
                     className="w-full h-[45vh] object-cover" 
                 />
-                {/* Back Button */}
                 <button 
                     onClick={() => navigate(-1)}
                     className="absolute top-12 left-4 bg-white rounded-full p-2.5 shadow-md"
@@ -66,7 +64,6 @@ function ProductDetail() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-                {/* Wishlist Button */}
                 <button 
                     onClick={() => isWishlisted(product.id) ? removeFromWishlist(product.id) : addToWishlist(product)}
                     className={`absolute top-12 right-4 rounded-full p-2.5 shadow-md ${isWishlisted(product.id) ? 'bg-red-500' : 'bg-white'}`}
@@ -76,32 +73,23 @@ function ProductDetail() {
                     </svg>
                 </button>
             </div>
-
-            {/* Product Info */}
             <div className="px-5 pt-5">
-                {/* Name & Price */}
                 <div className="flex items-start justify-between">
                     <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
                     <p className="text-xl font-bold text-purple-600">${product.price}</p>
                 </div>
-
-                {/* Rating */}
                 <div className="flex items-center gap-2 mt-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                     <span className="text-sm text-gray-600">4.5 ( 20 Review )</span>
                 </div>
-
-                {/* Description */}
                 <div className="mt-5">
                     <h2 className="text-base font-bold text-gray-900 mb-2">Description</h2>
                     <p className="text-sm text-gray-500 leading-relaxed italic">
                         {product.description || "No description available for this product."}
                     </p>
                 </div>
-
-                {/* Size */}
                 <div className="mt-5">
                     <h2 className="text-base font-bold text-gray-900 mb-3">Size</h2>
                     <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -120,8 +108,6 @@ function ProductDetail() {
                         ))}
                     </div>
                 </div>
-
-                {/* Action Buttons */}
                 <div className="flex gap-3 mt-8">
                     <button 
                         className="flex-1 bg-purple-600 text-white py-3.5 rounded-full text-base font-semibold hover:bg-purple-700 transition-colors"
