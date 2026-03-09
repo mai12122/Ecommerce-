@@ -282,5 +282,101 @@
     "image": "products/7.png",
     "created_at": "2026-03-07T18:49:44.963Z"
   }
+},
+{
+  "model": "store.product",
+  "pk": 22,
+  "fields": {
+    "category": 1,
+    "name": "Floral Summer Blouse",
+    "description": "Lightweight top for warm weather.",
+    "price": "11.00",
+    "image": "products/c1.png",
+    "created_at": "2026-03-09T09:00:10.000Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 23,
+  "fields": {
+    "category": 1,
+    "name": "High Waist Jeans",
+    "description": "Comfort stretch denim for daily wear.",
+    "price": "18.00",
+    "image": "products/b3.png",
+    "created_at": "2026-03-09T09:02:45.000Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 24,
+  "fields": {
+    "category": 2,
+    "name": "Classic Polo Shirt",
+    "description": "Breathable cotton polo.",
+    "price": "9.00",
+    "image": "products/s2.png",
+    "created_at": "2026-03-09T09:05:20.000Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 25,
+  "fields": {
+    "category": 2,
+    "name": "Slim Fit Chinos",
+    "description": "Smart casual style.",
+    "price": "14.00",
+    "image": "products/e.png",
+    "created_at": "2026-03-09T09:07:33.000Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 26,
+  "fields": {
+    "category": 3,
+    "name": "Kids Rainbow Hoodie",
+    "description": "Soft fleece hoodie for kids.",
+    "price": "12.00",
+    "image": "products/2.png",
+    "created_at": "2026-03-09T09:10:10.000Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 27,
+  "fields": {
+    "category": 3,
+    "name": "Kids Sport Set",
+    "description": "2-piece set for active days.",
+    "price": "16.00",
+    "image": "products/1.png",
+    "created_at": "2026-03-09T09:12:48.000Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 28,
+  "fields": {
+    "category": 4,
+    "name": "Leather Belt",
+    "description": "Adjustable everyday belt.",
+    "price": "8.00",
+    "image": "products/a1.png",
+    "created_at": "2026-03-09T09:14:59.000Z"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 29,
+  "fields": {
+    "category": 4,
+    "name": "Travel Backpack",
+    "description": "Multi-pocket backpack for school and travel.",
+    "price": "22.00",
+    "image": "products/a3.png",
+    "created_at": "2026-03-09T09:17:30.000Z"
+  }
 }
 ]
