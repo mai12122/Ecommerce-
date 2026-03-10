@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import ProductCard from "../components/ProductCard";
 import GenZLogo from "../assets/GenZlogo.png";
 
 const COLORS = {
-  bgDarkest: "#0F1420",    // Main page background
-  bgPrimary: "#19233C",    // Header background
-  bgSecondary: "#2B3D5F",  // Inactive buttons/cards
-  bgAccent: "#4E6793",     // Hover/active states
-  textLight: "#E5E7EB",    // Primary text on dark backgrounds
+  bgDarkest: "#0F1420",    
+  bgPrimary: "#19233C",    
+  bgSecondary: "#2B3D5F", 
+  bgAccent: "#4E6793",    
+  textLight: "#E5E7EB",  
 };
 
 function ProductList() {
@@ -20,12 +20,20 @@ function ProductList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);  
+  const [searchParams] = useSearchParams(); // 🔹 Hook to read URL params
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const { cartItems } = useCart();
   const { user } = useAuth();
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  // Fetch products and categories on mount
+  // 🔹 Sync selectedCategory with URL parameter on mount
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    if (categoryFromUrl) {
+      setSelectedCategory(decodeURIComponent(categoryFromUrl));
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -54,7 +62,6 @@ function ProductList() {
     loadInitialData();
   }, [BASEURL]);
 
-  // Filter logic extracted for clarity
   const isProductVisible = (product) => {
     const matchesCategory = selectedCategory === "All" || product.category?.name === selectedCategory;
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -63,26 +70,22 @@ function ProductList() {
 
   const filteredProducts = products.filter(isProductVisible);
 
-  // Loading state
   if (loading) {
     return <div className="text-center mt-10 text-[#E5E7EB]">Loading products...</div>;
   }
 
-  // Error state
   if (error) {
     return <div className="text-center mt-10 text-red-400">Error: {error}</div>;
   }
 
   return (
     <div className="min-h-screen bg-[#0F1420] pb-20 md:pb-0">
-      {/* Header: Logo, Cart & Search */}
       <header className="bg-[#19233C] pt-6 pb-4 px-5">
         <div className="flex justify-between items-center mb-4">
           <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md">
             <img src={GenZLogo} alt="GenZ" className="h-10 w-auto" />
           </div>
           <Link to="/cart" className="relative">
-            {/* Cart Icon */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 text-[#E5E7EB]"
@@ -109,9 +112,24 @@ function ProductList() {
           {user ? `Welcome, ${user.name.split(" ")[0]}!` : "Discover"}
         </h2>
 
-        {/* Search Bar */}
+        {/* 🔹 Show active category badge if filtered */}
+        {selectedCategory !== "All" && (
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-sm text-[#4E6793]">Filtering by:</span>
+            <button
+              onClick={() => {
+                setSelectedCategory("All");
+                // Optional: clear URL param too
+                window.history.replaceState({}, '', window.location.pathname);
+              }}
+              className="px-3 py-1 bg-[#4E6793] text-[#E5E7EB] text-xs rounded-full hover:bg-[#2B3D5F] transition-colors"
+            >
+              {selectedCategory} ✕
+            </button>
+          </div>
+        )}
+
         <div className="flex items-center bg-[#E5E7EB] rounded-full px-4 py-2.5 gap-3">
-          {/* Search Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5 text-gray-400 shrink-0"
@@ -133,7 +151,6 @@ function ProductList() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 outline-none text-sm text-[#0F1420] bg-transparent placeholder-gray-500"
           />
-          {/* Filter Icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5 text-gray-500 shrink-0"
@@ -151,10 +168,12 @@ function ProductList() {
         </div>
       </header>
 
-      {/* Category Filter Buttons */}
       <nav className="flex gap-3 px-5 py-4 overflow-x-auto no-scrollbar">
         <button
-          onClick={() => setSelectedCategory("All")}
+          onClick={() => {
+            setSelectedCategory("All");
+            window.history.replaceState({}, '', window.location.pathname); // 🔹 Clear URL param
+          }}
           className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             selectedCategory === "All"
               ? `bg-[#E5E7EB] text-[#19233C] border-2 border-[#19233C]`
@@ -166,7 +185,13 @@ function ProductList() {
         {categories.map((category) => (
           <button
             key={category.id}
-            onClick={() => setSelectedCategory(category.name)}
+            onClick={() => {
+              setSelectedCategory(category.name);
+              // 🔹 Optional: Update URL when clicking category buttons
+              const newParams = new URLSearchParams(window.location.search);
+              newParams.set("category", category.name);
+              window.history.replaceState({}, '', `?${newParams.toString()}`);
+            }}
             className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
               selectedCategory === category.name
                 ? `bg-[#E5E7EB] text-[#19233C] border-2 border-[#19233C]`
@@ -178,7 +203,6 @@ function ProductList() {
         ))}
       </nav>
 
-      {/* Product Grid */}
       <main className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-4 gap-4">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
@@ -186,7 +210,7 @@ function ProductList() {
           ))
         ) : (
           <p className="col-span-full text-center text-[#E5E7EB] py-10">
-            No products found.
+            No products found{selectedCategory !== "All" ? ` in "${selectedCategory}"` : ""}.
           </p>
         )}
       </main>

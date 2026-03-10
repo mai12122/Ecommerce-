@@ -24,7 +24,6 @@ function SignInPage() {
 
     return (
         <div className="min-h-screen bg-[#0F1420] flex flex-col items-center justify-center px-4">
-            {/* Logo & Header */}
             <div className="text-center mb-8">
                 <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <img src={GenZLogo} alt="GenZ" className="h-20 w-auto" />
@@ -32,13 +31,12 @@ function SignInPage() {
                 <p className="text-[#4E6793] text-sm">Welcome Back</p>
             </div>
 
-            {/* Card */}
             <div className="w-full max-w-md">
                 <div className="bg-[#19233C] rounded-2xl p-8 border border-[#2B3D5F] shadow-xl">
                     <h2 className="text-lg font-semibold text-[#E5E7EB] text-center mb-6">Sign In to Your Account</h2>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Email */}
+                       
                         <div>
                             <label className="text-sm text-[#4E6793] mb-2 block font-medium">Email Address</label>
                             <div className="relative">
@@ -58,7 +56,6 @@ function SignInPage() {
                             </div>
                         </div>
 
-                        {/* Password */}
                         <div>
                             <label className="text-sm text-[#4E6793] mb-2 block font-medium">Password</label>
                             <div className="relative">
@@ -94,14 +91,12 @@ function SignInPage() {
                             </div>
                         </div>
 
-                        {/* Error */}
                         {error && (
                             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3">
                                 <p className="text-red-400 text-sm text-center">{error}</p>
                             </div>
                         )}
 
-                        {/* Submit Button */}
                         <button
                             type="submit"
                             className="w-full bg-[#4E6793] text-[#E5E7EB] py-3.5 rounded-xl text-base font-semibold flex items-center justify-center gap-2 hover:bg-[#4E6793]/90 transition-colors shadow-lg"
@@ -113,14 +108,11 @@ function SignInPage() {
                         </button>
                     </form>
 
-                    {/* Divider */}
                     <div className="flex items-center gap-4 my-6">
                         <div className="flex-1 h-px bg-[#2B3D5F]" />
                         <span className="text-[#4E6793] text-sm">Or continue with</span>
                         <div className="flex-1 h-px bg-[#2B3D5F]" />
                     </div>
-
-                    {/* Google Button */}
                     <button className="w-full bg-[#2B3D5F] text-[#E5E7EB] py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-3 hover:bg-[#2B3D5F]/80 transition-colors border border-[#2B3D5F]">
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -132,7 +124,6 @@ function SignInPage() {
                     </button>
                 </div>
 
-                {/* Sign Up Link */}
                 <div className="text-center mt-6">
                     <p className="text-[#4E6793] text-sm">
                         Don't have an account?{" "}

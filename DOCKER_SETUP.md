@@ -17,7 +17,12 @@ From the project root (`Ecommerce-`):
 ```bash
 make up
 ```
-
+## use another git bas to copy the catelog 
+```bash
+docker compose cp catalog.json backend:/app/catalog.json
+docker compose exec -T backend python manage.py loaddata /app/catalog.json
+docker compose exec -T backend python manage.py shell -c "from store.models import Product, Category; print('products=', Product.objects.count(), 'categories=', Category.objects.count())"
+```
 ## Open App
 - Frontend: `http://localhost:5173`
 - Backend API: `http://localhost:8000/api/products/`

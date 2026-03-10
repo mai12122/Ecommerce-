@@ -4,12 +4,12 @@ import { useCart } from "../context/CartContext";
 import GenZLogo from "../assets/GenZlogo.png";
 
 const COLORS = {
-  bgDarkest: "#0F1420",    // Main page background
-  bgPrimary: "#19233C",    // Header background
-  bgSecondary: "#2B3D5F",  // Inactive buttons/cards
-  bgAccent: "#4E6793",     // Hover/active states
-  textLight: "#E5E7EB",    // Primary text on dark backgrounds
-  border: "#E5E7EB",       // Borders
+  bgDarkest: "#0F1420",    
+  bgPrimary: "#19233C",    
+  bgSecondary: "#2B3D5F",  
+  bgAccent: "#4E6793",    
+  textLight: "#E5E7EB",    
+  border: "#E5E7EB",     
 };
 
 const SHIPPING_COST = 15.00;
@@ -33,7 +33,6 @@ function CheckoutPage() {
   const shipping = cartItems.length > 0 ? SHIPPING_COST : 0;
   const cartTotal = total + shipping;
 
-  // Handler functions
   const handleBack = () => navigate(-1);
   const handleContinueShopping = () => navigate("/");
   const handleCloseSuccess = () => {
@@ -80,7 +79,6 @@ function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#0F1420] pb-24 md:pb-8">
-      {/* Header */}
       <header className="sticky top-0 bg-[#19233C] z-10 pt-6 pb-4 px-5">
         <div className="flex justify-between items-center">
           <button onClick={handleBack} className="flex items-center gap-1 text-[#4E6793] hover:text-[#E5E7EB] transition-colors">
@@ -97,7 +95,6 @@ function CheckoutPage() {
       </header>
 
       <div className="px-5 pt-6 max-w-md mx-auto">
-        {/* Order Total */}
         {cartItems.length > 0 && (
           <div className="bg-[#19233C] rounded-xl p-4 mb-6 flex justify-between items-center">
             <span className="text-[#E5E7EB] font-medium">
@@ -108,8 +105,6 @@ function CheckoutPage() {
             </span>
           </div>
         )}
-
-        {/* COD Badge */}
         <div className="flex items-center gap-3 bg-[#19233C] rounded-xl p-4 mb-6 border border-[#2B3D5F]">
           <div className="w-10 h-10 bg-[#2B3D5F] rounded-full flex items-center justify-center">
             <svg
@@ -136,10 +131,7 @@ function CheckoutPage() {
             </p>
           </div>
         </div>
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
           <div>
             <label className="text-sm text-[#4E6793] mb-2 block">Name</label>
             <input
@@ -153,7 +145,6 @@ function CheckoutPage() {
             />
           </div>
 
-          {/* Phone */}
           <div>
             <label className="text-sm text-[#4E6793] mb-2 block">Phone</label>
             <input
@@ -166,8 +157,6 @@ function CheckoutPage() {
               required
             />
           </div>
-
-          {/* Address */}
           <div>
             <label className="text-sm text-[#4E6793] mb-2 block">Address</label>
             <input
@@ -180,15 +169,11 @@ function CheckoutPage() {
               required
             />
           </div>
-
-          {/* Error Message */}
           {message && (
             <p className="text-center text-sm font-medium text-red-400 bg-red-500/10 rounded-xl py-3">
               {message}
             </p>
           )}
-
-          {/* Checkout Button */}
           <button
             type="submit"
             disabled={loading}
@@ -198,12 +183,9 @@ function CheckoutPage() {
           </button>
         </form>
       </div>
-
-      {/* Success Popup */}
       {showSuccess && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-5">
           <div className="bg-[#19233C] rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl border border-[#2B3D5F]">
-            {/* Checkmark */}
             <div className="w-20 h-20 bg-[#2B3D5F] rounded-full flex items-center justify-center mx-auto mb-5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

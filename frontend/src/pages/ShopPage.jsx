@@ -83,7 +83,6 @@ function ShopPage() {
 
   return (
     <div className={`min-h-screen ${colors.bgMain} ${colors.textMain} pb-20`}>
-      {/* Header Section */}
       <header className="bg-[#19233C] pt-6 pb-4 px-5">
         <div className="flex justify-between items-center mb-2">
           <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md">
@@ -113,8 +112,6 @@ function ShopPage() {
         </div>
         <h2 className="text-[#E5E7EB] text-lg font-medium text-center">Shop Categories</h2>
       </header>
-
-      {/* Category Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((cat) => {
@@ -133,7 +130,6 @@ function ShopPage() {
                 `}
               >
                 <div className="flex flex-col h-full">
-                  {/* Image Section */}
                   <div className="h-48 w-full overflow-hidden relative bg-[#0F1420]">
                     {image ? (
                       <>
@@ -142,8 +138,7 @@ function ShopPage() {
                           alt={cat.name}
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                        {/* Gradient Overlay for text readability if needed, or just aesthetic */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0F1420]/80 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient from-[#0F1420]/80 to-transparent" />
                       </>
                     ) : (
                       <div className="h-full w-full flex items-center justify-center opacity-20">
@@ -151,16 +146,14 @@ function ShopPage() {
                       </div>
                     )}
                   </div>
-
-                  {/* Content Section */}
-                  <div className="p-6 flex flex-col justify-center flex-grow">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-bold tracking-wide uppercase">
-                        {cat.name}
-                      </h2>
-                      {/* Arrow Icon that moves on hover */}
+                  <div className="p-6 flex items-center justify-between">
+                    <h2 className="text-xl font-bold tracking-wide uppercase">
+                      {cat.name}
+                    </h2>
+                    <p className={`text-sm ${colors.textMuted} flex items-center gap-1 group-hover:translate-x-1 transition-transform`}>
+                      View Products
                       <svg
-                        className={`w-5 h-5 ${colors.textMuted} transform transition-transform group-hover:translate-x-1`}
+                        className="w-4 h-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -172,9 +165,6 @@ function ShopPage() {
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                    </div>
-                    <p className={`mt-2 text-sm ${colors.textMuted}`}>
-                      View Products
                     </p>
                   </div>
                 </div>

@@ -68,15 +68,12 @@ function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-white pb-24 md:pb-8">
-      {/* Image Section */}
       <div className="relative bg-[#F8FAFC]">
         <img 
           src={product.image} 
           alt={product.name} 
           className="w-full h-[50vh] md:h-[55vh] object-cover" 
         />
-        
-        {/* Back Button */}
         <button 
           onClick={() => navigate(-1)}
           className="absolute top-5 left-5 bg-white rounded-full p-3 shadow-md border border-[#E5E7EB] hover:bg-[#F8FAFC] transition-colors"
@@ -85,8 +82,6 @@ function ProductDetail() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-
-        {/* Wishlist Button */}
         <button 
           onClick={() => isWishlisted(product.id) ? removeFromWishlist(product.id) : addToWishlist(product)}
           className={`absolute top-5 right-5 rounded-full p-3 shadow-md border transition-colors ${
@@ -107,21 +102,15 @@ function ProductDetail() {
           </svg>
         </button>
       </div>
-
-      {/* Product Info */}
       <div className="px-5 pt-6">
-        {/* Category Badge */}
         <span className="inline-block px-3 py-1 bg-[#F1F5F9] rounded-full text-xs font-medium text-[#4E6793] mb-3">
           {product.category?.name || 'Uncategorized'}
         </span>
-
-        {/* Title & Price */}
         <div className="flex items-start justify-between mb-3">
           <h1 className="text-xl md:text-2xl font-bold text-[#0F1420] leading-tight">{product.name}</h1>
           <p className="text-xl font-bold text-[#4E6793]">${product.price}</p>
         </div>
 
-        {/* Rating */}
         <div className="flex items-center gap-2 mb-6">
           <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -137,19 +126,13 @@ function ProductDetail() {
           </div>
           <span className="text-sm text-[#2B3D5F]">4.5 (20 Reviews)</span>
         </div>
-
-        {/* Divider */}
         <div className="h-px bg-[#E5E7EB] mb-6" />
-
-        {/* Description */}
         <div className="mb-6">
           <h2 className="text-xs font-semibold text-[#4E6793] mb-3 uppercase tracking-wider">Description</h2>
           <p className="text-sm text-[#2B3D5F] leading-relaxed">
             {product.description || "No description available for this product."}
           </p>
         </div>
-
-        {/* Size Selection */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-semibold text-[#4E6793] uppercase tracking-wider">Size</h2>
@@ -173,8 +156,6 @@ function ProductDetail() {
             ))}
           </div>
         </div>
-
-        {/* Action Buttons */}
         <div className="flex gap-3">
           <button 
             className="flex-1 bg-[#4E6793] text-white py-4 rounded-xl text-base font-semibold hover:bg-[#4E6793]/90 transition-colors shadow-lg shadow-[#4E6793]/20 flex items-center justify-center gap-2"
