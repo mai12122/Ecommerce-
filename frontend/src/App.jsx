@@ -22,7 +22,7 @@ function AppContent() {
   const { isAuthenticated } = useAuth();
   const authPages = ["/signin", "/signup"];
   const isAuthPage = authPages.includes(location.pathname);
-  const hideNavbar = isAuthPage || location.pathname === "/" || location.pathname.startsWith("/products/") || location.pathname === "/wishlist" || location.pathname === "/profile";
+  const hideNavbar = isAuthPage || location.pathname === "/" || location.pathname.startsWith("/products/") || location.pathname === "/wishlist" || location.pathname === "/profile" || location.pathname === "/cart" || location.pathname === "/checkout" || location.pathname === "/shop";
   return (
     <>
       {!hideNavbar && <NavBar />}
