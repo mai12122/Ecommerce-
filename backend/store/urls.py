@@ -11,7 +11,7 @@ urlpatterns = [
     path('cart/remove/', views.remove_from_cart),
     path('cart/update/', views.update_cart_quantity),
     path('orders/create/', views.create_orders),
-    path('orders/history/', views.get_order_history),
-    path('orders/history/<int:pk>/', views.get_order_detail),
-    
+    path('orders/', views.get_orders),
+    path('auth/signup/', views.signup),
+    path('auth/signin/', views.signin),
 ]

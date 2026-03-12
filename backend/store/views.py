@@ -1,7 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import Product, Category, Cart, CartItem, Order, OrderItem
-from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from .models import Product, Category, Cart, CartItem, Order, OrderItem, UserProfile
+from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer, OrderSerializer
 
 
 @api_view(['GET'])
@@ -132,54 +134,75 @@ def create_orders(request):
         return Response({'error': str(e)}, status=500)
 
 @api_view(['GET'])
-def get_order_history(request):
+def get_orders(request):
+    orders = Order.objects.prefetch_related('items__product').order_by('-created_at')
+    serializer = OrderSerializer(orders, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def signup(request):
+    data = request.data
+    name = data.get('name', '').strip()
+    email = data.get('email', '').strip()
+    phone = data.get('phone', '').strip()
+    password = data.get('password', '')
+
+    if not name or not email or not password:
+        return Response({'error': 'Name, email, and password are required'}, status=400)
+
+    if User.objects.filter(email=email).exists():
+        return Response({'error': 'Email already registered'}, status=400)
+
+    # Use email as username since the frontend works with email
+    if User.objects.filter(username=email).exists():
+        return Response({'error': 'Email already registered'}, status=400)
+
+    name_parts = name.split(' ', 1)
+    first_name = name_parts[0]
+    last_name = name_parts[1] if len(name_parts) > 1 else ''
+
+    user = User.objects.create_user(
+        username=email,
+        email=email,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+    )
+
+    UserProfile.objects.create(user=user, phone_number=phone)
+
+    return Response({
+        'id': user.id,
+        'name': user.get_full_name(),
+        'email': user.email,
+        'phone': phone,
+    }, status=201)
+
+
+@api_view(['POST'])
+def signin(request):
+    data = request.data
+    email = data.get('email', '').strip()
+    password = data.get('password', '')
+
+    if not email or not password:
+        return Response({'error': 'Email and password are required'}, status=400)
+
+    user = authenticate(username=email, password=password)
+
+    if user is None:
+        return Response({'error': 'Invalid email or password'}, status=401)
+
+    phone = ''
     try:
-        orders = Order.objects.all().order_by('-id')
-        data = []
+        phone = user.userprofile.phone_number
+    except UserProfile.DoesNotExist:
+        pass
 
-        for order in orders:
-            items = OrderItem.objects.filter(order=order)
-
-            order_items = []
-            for item in items:
-                order_items.append({
-                    "product": item.product.name,
-                    "quantity": item.quantity,
-                    "price": item.price
-                })
-
-            data.append({
-                "order_id": order.id,
-                "total_amount": order.total_amount,
-                "items": order_items
-            })
-
-        return Response(data)
-
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
-
-@api_view(['GET'])
-def get_order_detail(request, pk):
-    try:
-        order = Order.objects.get(id=pk)
-        items = OrderItem.objects.filter(order=order)
-
-        order_items = []
-        for item in items:
-            order_items.append({
-                "product": item.product.name,
-                "quantity": item.quantity,
-                "price": item.price
-            })
-
-        data = {
-            "order_id": order.id,
-            "total_amount": order.total_amount,
-            "items": order_items
-        }
-
-        return Response(data)
-
-    except Order.DoesNotExist:
-        return Response({'error': 'Order not found'}, status=404)
+    return Response({
+        'id': user.id,
+        'name': user.get_full_name(),
+        'email': user.email,
+        'phone': phone,
+    })

@@ -17,12 +17,13 @@ function SignUpPage() {
     const [showConfirm, setShowConfirm] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
 
@@ -39,7 +40,9 @@ function SignUpPage() {
             return;
         }
 
-        const result = signUp(form.name, form.email, form.phone, form.password);
+        setLoading(true);
+        const result = await signUp(form.name, form.email, form.phone, form.password);
+        setLoading(false);
         if (result.success) {
             navigate("/");
         } else {
@@ -205,9 +208,10 @@ function SignUpPage() {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className="w-full bg-[#4E6793] text-[#E5E7EB] py-3.5 rounded-xl text-base font-semibold flex items-center justify-center gap-2 hover:bg-[#4E6793]/90 transition-colors shadow-lg"
+                            disabled={loading}
+                            className="w-full bg-[#4E6793] text-[#E5E7EB] py-3.5 rounded-xl text-base font-semibold flex items-center justify-center gap-2 hover:bg-[#4E6793]/90 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Create Account
+                            {loading ? "Creating Account..." : "Create Account"}
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>

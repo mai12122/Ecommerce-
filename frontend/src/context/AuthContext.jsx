@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { MOCK_USERS } from "../Data/mockUsers";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
     const [user, setUser] = useState(null);
-    const [users, setUsers] = useState(MOCK_USERS);
+
     useEffect(() => {
         const stored = localStorage.getItem("auth_user");
         if (stored) {
@@ -13,30 +13,42 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const signIn = (email, password) => {
-        const found = users.find(
-            (u) => u.email === email && u.password === password
-        );
-        if (found) {
-            const { password: _, ...safeUser } = found;
-            setUser(safeUser);
-            localStorage.setItem("auth_user", JSON.stringify(safeUser));
-            return { success: true };
+    const signIn = async (email, password) => {
+        try {
+            const res = await fetch(`${BASEURL}/api/auth/signin/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUser(data);
+                localStorage.setItem("auth_user", JSON.stringify(data));
+                return { success: true };
+            }
+            return { success: false, error: data.error || "Invalid email or password" };
+        } catch {
+            return { success: false, error: "Network error. Please try again." };
         }
-        return { success: false, error: "Invalid email or password" };
     };
 
-    const signUp = (name, email, phone, password) => {
-        const exists = users.find((u) => u.email === email);
-        if (exists) {
-            return { success: false, error: "Email already registered" };
+    const signUp = async (name, email, phone, password) => {
+        try {
+            const res = await fetch(`${BASEURL}/api/auth/signup/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, phone, password }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUser(data);
+                localStorage.setItem("auth_user", JSON.stringify(data));
+                return { success: true };
+            }
+            return { success: false, error: data.error || "Registration failed" };
+        } catch {
+            return { success: false, error: "Network error. Please try again." };
         }
-        const newUser = { id: users.length + 1, name, email, phone, password };
-        setUsers((prev) => [...prev, newUser]);
-        const { password: _, ...safeUser } = newUser;
-        setUser(safeUser);
-        localStorage.setItem("auth_user", JSON.stringify(safeUser));
-        return { success: true };
     };
 
     const signOut = () => {

@@ -10,6 +10,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
+import OrderHistory from "./pages/orderhistory";
 import { useAuth } from "./context/AuthContext";
 
 function ProtectedRoute({ children }) {
@@ -22,7 +23,7 @@ function AppContent() {
   const { isAuthenticated } = useAuth();
   const authPages = ["/signin", "/signup"];
   const isAuthPage = authPages.includes(location.pathname);
-  const hideNavbar = isAuthPage || location.pathname === "/" || location.pathname.startsWith("/products/") || location.pathname === "/wishlist" || location.pathname === "/profile" || location.pathname === "/cart" || location.pathname === "/checkout" || location.pathname === "/shop";
+  const hideNavbar = isAuthPage || location.pathname === "/" || location.pathname.startsWith("/products/") || location.pathname === "/wishlist" || location.pathname === "/profile" || location.pathname === "/cart" || location.pathname === "/checkout" || location.pathname === "/shop" || location.pathname === "/orders";
   return (
     <>
       {!hideNavbar && <NavBar />}
@@ -36,6 +37,7 @@ function AppContent() {
         <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
         <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+        <Route path="/orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
       </Routes>
       {!isAuthPage && <BottomNav />}
     </>
