@@ -20,13 +20,12 @@ function ProductList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);  
-  const [searchParams] = useSearchParams(); // 🔹 Hook to read URL params
+  const [searchParams] = useSearchParams(); 
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const { cartItems } = useCart();
   const { user } = useAuth();
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  // 🔹 Sync selectedCategory with URL parameter on mount
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
     if (categoryFromUrl) {
@@ -111,15 +110,12 @@ function ProductList() {
         <h2 className="text-[#E5E7EB] text-lg font-medium mb-3">
           {user ? `Welcome, ${user.name.split(" ")[0]}!` : "Discover"}
         </h2>
-
-        {/* 🔹 Show active category badge if filtered */}
         {selectedCategory !== "All" && (
           <div className="mb-3 flex items-center gap-2">
             <span className="text-sm text-[#4E6793]">Filtering by:</span>
             <button
               onClick={() => {
                 setSelectedCategory("All");
-                // Optional: clear URL param too
                 window.history.replaceState({}, '', window.location.pathname);
               }}
               className="px-3 py-1 bg-[#4E6793] text-[#E5E7EB] text-xs rounded-full hover:bg-[#2B3D5F] transition-colors"
@@ -172,7 +168,7 @@ function ProductList() {
         <button
           onClick={() => {
             setSelectedCategory("All");
-            window.history.replaceState({}, '', window.location.pathname); // 🔹 Clear URL param
+            window.history.replaceState({}, '', window.location.pathname); 
           }}
           className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             selectedCategory === "All"
@@ -187,7 +183,6 @@ function ProductList() {
             key={category.id}
             onClick={() => {
               setSelectedCategory(category.name);
-              // 🔹 Optional: Update URL when clicking category buttons
               const newParams = new URLSearchParams(window.location.search);
               newParams.set("category", category.name);
               window.history.replaceState({}, '', `?${newParams.toString()}`);

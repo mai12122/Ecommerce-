@@ -22,8 +22,6 @@ function ShopPage() {
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const { cartItems } = useCart();
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-
-  // Color Palette Definition
   const colors = {
     bgMain: "bg-[#0F1420]",
     cardBase: "bg-[#19233C]",

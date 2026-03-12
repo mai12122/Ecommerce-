@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
@@ -12,6 +13,13 @@ export const AuthProvider = ({ children }) => {
             setUser(JSON.parse(stored));
         }
     }, []);
+
+    const updateProfile = (updates) => {
+        const updatedUser = { ...user, ...updates };
+        setUser(updatedUser);
+        localStorage.setItem("auth_user", JSON.stringify(updatedUser));
+        return { success: true };
+    };
 
     const signIn = async (email, password) => {
         try {
@@ -57,7 +65,14 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, signIn, signUp, signOut, isAuthenticated: !!user }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            signIn, 
+            signUp, 
+            signOut, 
+            updateProfile,  
+            isAuthenticated: !!user 
+        }}>
             {children}
         </AuthContext.Provider>
     );
