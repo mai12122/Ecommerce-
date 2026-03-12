@@ -14,4 +14,5 @@ urlpatterns = [
     path('orders/', views.get_orders),
     path('auth/signup/', views.signup),
     path('auth/signin/', views.signin),
+    path('auth/profile/', views.update_profile),
 ]

@@ -14,11 +14,27 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const updateProfile = (updates) => {
-        const updatedUser = { ...user, ...updates };
-        setUser(updatedUser);
-        localStorage.setItem("auth_user", JSON.stringify(updatedUser));
-        return { success: true };
+    const updateProfile = async (updates) => {
+        try {
+            const res = await fetch(`${BASEURL}/api/auth/profile/`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: user.id, ...updates }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                const updatedUser = { ...user, ...data };
+                if (data.avatar) {
+                    updatedUser.avatar = data.avatar.startsWith('http') ? data.avatar : `${BASEURL}${data.avatar}`;
+                }
+                setUser(updatedUser);
+                localStorage.setItem("auth_user", JSON.stringify(updatedUser));
+                return { success: true };
+            }
+            return { success: false, error: data.error || "Update failed" };
+        } catch {
+            return { success: false, error: "Network error. Please try again." };
+        }
     };
 
     const signIn = async (email, password) => {
@@ -30,6 +46,9 @@ export const AuthProvider = ({ children }) => {
             });
             const data = await res.json();
             if (res.ok) {
+                if (data.avatar && !data.avatar.startsWith('http')) {
+                    data.avatar = `${BASEURL}${data.avatar}`;
+                }
                 setUser(data);
                 localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };
@@ -49,6 +68,9 @@ export const AuthProvider = ({ children }) => {
             });
             const data = await res.json();
             if (res.ok) {
+                if (data.avatar && !data.avatar.startsWith('http')) {
+                    data.avatar = `${BASEURL}${data.avatar}`;
+                }
                 setUser(data);
                 localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };

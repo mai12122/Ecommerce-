@@ -1,9 +1,34 @@
+import base64
+import uuid
+from django.core.files.base import ContentFile
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Product, Category, Cart, CartItem, Order, OrderItem, UserProfile
 from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer, OrderSerializer
+
+
+def save_base64_avatar(profile, base64_string):
+    """Save a base64-encoded image string to the profile's avatar field."""
+    if not base64_string or not base64_string.startswith('data:image/'):
+        return
+    try:
+        header, data = base64_string.split(';base64,')
+        ext = header.split('/')[-1].split('+')[0]
+        if ext not in ('png', 'jpeg', 'jpg', 'gif', 'webp'):
+            return
+        file_name = f"{uuid.uuid4().hex}.{ext}"
+        profile.avatar.save(file_name, ContentFile(base64.b64decode(data)), save=True)
+    except (ValueError, Exception):
+        pass
+
+
+def get_avatar_url(profile, request=None):
+    """Return the full avatar URL or empty string."""
+    if profile.avatar:
+        return profile.avatar.url
+    return ''
 
 
 @api_view(['GET'])
@@ -170,13 +195,18 @@ def signup(request):
         last_name=last_name,
     )
 
-    UserProfile.objects.create(user=user, phone_number=phone)
+    profile = UserProfile.objects.create(user=user, phone_number=phone)
+
+    avatar_data = data.get('avatar', '')
+    if avatar_data:
+        save_base64_avatar(profile, avatar_data)
 
     return Response({
         'id': user.id,
         'name': user.get_full_name(),
         'email': user.email,
         'phone': phone,
+        'avatar': get_avatar_url(profile),
     }, status=201)
 
 
@@ -195,8 +225,10 @@ def signin(request):
         return Response({'error': 'Invalid email or password'}, status=401)
 
     phone = ''
+    avatar_url = ''
     try:
         phone = user.userprofile.phone_number
+        avatar_url = get_avatar_url(user.userprofile)
     except UserProfile.DoesNotExist:
         pass
 
@@ -205,4 +237,52 @@ def signin(request):
         'name': user.get_full_name(),
         'email': user.email,
         'phone': phone,
+        'avatar': avatar_url,
+    })
+
+
+@api_view(['PUT'])
+def update_profile(request):
+    data = request.data
+    user_id = data.get('id')
+
+    if not user_id:
+        return Response({'error': 'User ID is required'}, status=400)
+
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+
+    name = data.get('name', '').strip()
+    email = data.get('email', '').strip()
+    phone = data.get('phone', '').strip()
+
+    if name:
+        name_parts = name.split(' ', 1)
+        user.first_name = name_parts[0]
+        user.last_name = name_parts[1] if len(name_parts) > 1 else ''
+
+    if email:
+        if User.objects.filter(email=email).exclude(id=user.id).exists():
+            return Response({'error': 'Email already in use'}, status=400)
+        user.email = email
+        user.username = email
+
+    user.save()
+
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile.phone_number = phone
+    profile.save()
+
+    avatar_data = data.get('avatar', '')
+    if avatar_data and avatar_data.startswith('data:image/'):
+        save_base64_avatar(profile, avatar_data)
+
+    return Response({
+        'id': user.id,
+        'name': user.get_full_name(),
+        'email': user.email,
+        'phone': phone,
+        'avatar': get_avatar_url(profile),
     })

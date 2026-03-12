@@ -111,14 +111,17 @@ function ProfilePage() {
                 name: editedProfile.name.trim(),
                 email: editedProfile.email.trim(),
                 phone: editedProfile.phone.trim(),
-                ...(editedProfile.avatar && { avatar: editedProfile.avatar })
+                ...(previewUrl && { avatar: previewUrl })
             };
-            updateProfile(dataToSave);
-            setPreviewUrl(null);
-            setSaveMessage({ type: "success", text: "Profile saved successfully! ✓" });
-            setIsEditing(false);
-        
-            setTimeout(() => setSaveMessage(null), 3000);
+            const result = await updateProfile(dataToSave);
+            if (result.success) {
+                setPreviewUrl(null);
+                setSaveMessage({ type: "success", text: "Profile saved successfully! ✓" });
+                setIsEditing(false);
+                setTimeout(() => setSaveMessage(null), 3000);
+            } else {
+                setSaveMessage({ type: "error", text: result.error || "Failed to save. Please try again." });
+            }
             
         } catch (error) {
             console.error("Save failed:", error);
@@ -170,7 +173,46 @@ function ProfilePage() {
                         <span className="text-sm font-medium">Back</span>
                     </button>
                     <h2 className="text-[#E5E7EB] text-lg font-semibold">Profile</h2>
-                    <div className="w-14" />
+                    {isEditing ? (
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={handleCancel}
+                                disabled={isSaving}
+                                className="text-[#4E6793] hover:text-[#E5E7EB] text-sm font-medium transition-colors disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                disabled={isSaving || !hasUnsavedChanges()}
+                                className="bg-[#4E6793] hover:bg-[#5E7DB3] disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Saving
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Save
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setIsEditing(true)}
+                            className="flex items-center gap-1.5 text-[#4E6793] hover:text-[#E5E7EB] text-sm font-medium transition-colors"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                        </button>
+                    )}
                 </div>
             </header>
             {saveMessage && (
@@ -276,52 +318,10 @@ function ProfilePage() {
                     </div>
                 </div>
 
-                <div className="mt-5 flex gap-3">
-                    {isEditing ? (
-                        <>
-                            <button
-                                onClick={handleCancel}
-                                disabled={isSaving}
-                                className="flex-1 bg-[#2B3D5F] hover:bg-[#3D5075] disabled:opacity-50 text-[#E5E7EB] py-3 px-4 rounded-xl text-sm font-medium transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                disabled={isSaving || !hasUnsavedChanges()}
-                                className="flex-1 bg-[#4E6793] hover:bg-[#5E7DB3] disabled:opacity-50 disabled:hover:bg-[#4E6793] text-white py-3 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors"
-                            >
-                                {isSaving ? (
-                                    <>
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        Saving...
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Save Changes
-                                    </>
-                                )}
-                            </button>
-                        </>
-                    ) : (
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="w-full bg-[#2B3D5F] hover:bg-[#3D5075] text-[#E5E7EB] py-3 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            Edit Profile
-                        </button>
-                    )}
-                </div>
                 <button
                     onClick={triggerFileInput}
                     disabled={isUploading}
-                    className="w-full mt-3 bg-[#19233C] hover:bg-[#2B3D5F] disabled:opacity-50 text-[#4E6793] py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm"
+                    className="w-full mt-4 bg-[#0F1420] hover:bg-[#2B3D5F] disabled:opacity-50 text-[#4E6793] py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
