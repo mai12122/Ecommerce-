@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import GenZLogo from "../assets/GenZlogo.png";
 
 const COLORS = {
@@ -18,6 +19,7 @@ function CheckoutPage() {
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const navigate = useNavigate();
   const { cartItems, total, clearCart } = useCart();
+  const { token } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -49,10 +51,19 @@ function CheckoutPage() {
     setLoading(true);
     setMessage(null);
 
+    if (!token) {
+      setMessage("Authentication required. Please sign in again before placing your order.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${BASEURL}/api/orders/create/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
         body: JSON.stringify({
           name: form.name,
           phone: form.phone,
@@ -68,10 +79,11 @@ function CheckoutPage() {
         setOrderId(data.order_id);
         setShowSuccess(true);
       } else {
-        setMessage(data.error || "Something went wrong");
+        setMessage(data.error || data.detail || `Order failed (${res.status})`);
       }
-    } catch {
+    } catch (error) {
       setMessage("Network error. Please try again.");
+      console.error("Checkout error:", error);
     } finally {
       setLoading(false);
     }

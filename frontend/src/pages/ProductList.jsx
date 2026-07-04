@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import ProductCard from "../components/ProductCard";
@@ -19,12 +19,24 @@ function ProductList() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);  
+  const [error, setError] = useState(null);
+  const [showSigninMessage, setShowSigninMessage] = useState(false);
   const [searchParams] = useSearchParams(); 
+  const location = useLocation();
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const { cartItems } = useCart();
   const { user } = useAuth();
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  useEffect(() => {
+    if (location.state?.showSigninSuccess) {
+      setShowSigninMessage(true);
+      globalThis.history.replaceState({}, document.title, globalThis.location.pathname + globalThis.location.search);
+      const timer = setTimeout(() => setShowSigninMessage(false), 4500);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [location.state]);
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
@@ -79,6 +91,11 @@ function ProductList() {
 
   return (
     <div className="min-h-screen bg-[#0F1420] pb-20 md:pb-0">
+      {showSigninMessage && (
+        <div className="fixed left-1/2 top-5 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl bg-emerald-500/95 px-5 py-3 text-center text-sm font-semibold text-white shadow-xl shadow-emerald-900/20">
+          Signed in successfully. Welcome back!
+        </div>
+      )}
       <header className="bg-[#19233C] pt-6 pb-4 px-5">
         <div className="flex justify-between items-center mb-4">
           <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md">
@@ -116,7 +133,7 @@ function ProductList() {
             <button
               onClick={() => {
                 setSelectedCategory("All");
-                window.history.replaceState({}, '', window.location.pathname);
+                globalThis.history.replaceState({}, '', globalThis.location.pathname);
               }}
               className="px-3 py-1 bg-[#4E6793] text-[#E5E7EB] text-xs rounded-full hover:bg-[#2B3D5F] transition-colors"
             >
@@ -168,7 +185,7 @@ function ProductList() {
         <button
           onClick={() => {
             setSelectedCategory("All");
-            window.history.replaceState({}, '', window.location.pathname); 
+            globalThis.history.replaceState({}, '', globalThis.location.pathname);
           }}
           className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
             selectedCategory === "All"
@@ -183,9 +200,9 @@ function ProductList() {
             key={category.id}
             onClick={() => {
               setSelectedCategory(category.name);
-              const newParams = new URLSearchParams(window.location.search);
+              const newParams = new URLSearchParams(globalThis.location.search);
               newParams.set("category", category.name);
-              window.history.replaceState({}, '', `?${newParams.toString()}`);
+              globalThis.history.replaceState({}, '', `?${newParams.toString()}`);
             }}
             className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
               selectedCategory === category.name
