@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  backend:
+    image: ecommerce-backend:local
+    environment:
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: ecommerce_db
+      DB_USER: postgres
+      DB_PASSWORD: admin
+      DB_HOST: db
+      DB_PORT: 5432
+      DEBUG: "True"
+      SECRET_KEY: local-dev-secret
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    ports:
+      - target: 8000
+        published: 8000
+        protocol: tcp
+        mode: ingress
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+  frontend:
+    image: ecommerce-frontend:local
+    environment:
+      VITE_DJANGO_BASE_URL: http://127.0.0.1:8000
+    ports:
+      - target: 5173
+        published: 5173
+        protocol: tcp
+        mode: ingress
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  postgres_data:
