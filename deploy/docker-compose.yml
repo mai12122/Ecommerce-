@@ -1,0 +1,81 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ecommerce_db
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # Simplified test that checks Postgres readiness using the standard default account
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    networks:
+      - ecommerce-network
+
+  backend:
+    build:
+      context: ../backend
+    restart: unless-stopped
+    # B2.5 Orchestration & B2.7 High Availability: Scales your backend to 3 replicas
+    deploy:
+      replicas: 3
+    env_file:
+      - ../.env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+    expose:
+      - "8000"
+    volumes:
+      - ../backend:/app
+      - ../backend/media:/app/media
+    networks:
+      - ecommerce-network
+
+  nginx_lb:
+    image: nginx:alpine
+    container_name: nginx_lb
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - ecommerce-network
+
+  frontend:
+    build:
+      context: ../frontend
+    container_name: ecommerce_frontend
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    networks:
+      - ecommerce-network
+
+volumes:
+  postgres_data:
+
+networks:
+  ecommerce-network:
+    driver: bridge
