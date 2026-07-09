@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from "react-router-dom";
 import ProductList from "./pages/ProductList";
 import ProductDetail from "./pages/ProductDetails";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/Navbar";
 import BottomNav from "./components/BottomNav";
 import CartPage from "./pages/CartPage";
 import ShopPage from "./pages/ShopPage";
