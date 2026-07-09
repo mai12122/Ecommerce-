@@ -4,13 +4,18 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
+    const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL || "http://127.0.0.1:8000";
     const [user, setUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem("auth_token"));
 
     useEffect(() => {
         const stored = localStorage.getItem("auth_user");
+        const storedToken = localStorage.getItem("auth_token");
         if (stored) {
             setUser(JSON.parse(stored));
+        }
+        if (storedToken) {
+            setToken(storedToken);
         }
     }, []);
 
@@ -18,7 +23,8 @@ export const AuthProvider = ({ children }) => {
         try {
             const res = await fetch(`${BASEURL}/api/auth/profile/`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie('csrftoken') },
+                credentials: 'include',
                 body: JSON.stringify({ id: user.id, ...updates }),
             });
             const data = await res.json();
@@ -49,6 +55,11 @@ export const AuthProvider = ({ children }) => {
                 if (data.avatar && !data.avatar.startsWith('http')) {
                     data.avatar = `${BASEURL}${data.avatar}`;
                 }
+                // store token separately for API requests
+                if (data.token) {
+                    localStorage.setItem('auth_token', data.token);
+                    setToken(data.token);
+                }
                 setUser(data);
                 localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };
@@ -71,6 +82,10 @@ export const AuthProvider = ({ children }) => {
                 if (data.avatar && !data.avatar.startsWith('http')) {
                     data.avatar = `${BASEURL}${data.avatar}`;
                 }
+                if (data.token) {
+                    localStorage.setItem('auth_token', data.token);
+                    setToken(data.token);
+                }
                 setUser(data);
                 localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };
@@ -83,12 +98,15 @@ export const AuthProvider = ({ children }) => {
 
     const signOut = () => {
         setUser(null);
+        setToken(null);
         localStorage.removeItem("auth_user");
+        localStorage.removeItem('auth_token');
     };
 
     return (
         <AuthContext.Provider value={{ 
             user, 
+            token,
             signIn, 
             signUp, 
             signOut, 

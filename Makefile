@@ -43,3 +43,6 @@ pormote-hai: promote-hai
 
 promote-all: promote-nara promote-chesda promote-manea promote-hai
 	@echo "All four users are promoted."
+
+test:
+	$(COMPOSE) exec -T $(BACKEND_SERVICE) python manage.py test

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import GenZLogo from "../assets/GenZlogo.png";
 
 function OrderHistory() {
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState(null);
@@ -12,8 +14,19 @@ function OrderHistory() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch(`${BASEURL}/api/orders/`);
-        if (!res.ok) throw new Error("Failed to fetch orders");
+        if (!token) {
+          throw new Error("Not authenticated. Please sign in first.");
+        }
+
+        const res = await fetch(`${BASEURL}/api/orders/`, {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Failed to fetch orders (${res.status}) ${errorText}`);
+        }
         const data = await res.json();
         setOrders(data);
       } catch (error) {
@@ -23,7 +36,7 @@ function OrderHistory() {
       }
     };
     fetchOrders();
-  }, [BASEURL]);
+  }, [BASEURL, token]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

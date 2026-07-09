@@ -1,0 +1,14 @@
+# Environment files
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Django
+media/
+*.sqlite3
+
+# Node
+node_modules/
+dist/

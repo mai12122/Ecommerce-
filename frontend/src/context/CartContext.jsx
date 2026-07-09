@@ -1,14 +1,16 @@
-import { createContext, useContext, useState, useEffect} from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
+import { useAuth } from "./AuthContext.jsx";
 const CartContext = createContext();
 export const CartProvider = ({ children }) => {
-    const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
+    const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL || "http://127.0.0.1:8000";
+    const { token } = useAuth();
     const [cartItems, setCartItems] = useState([]);
     const [total, setTotal] = useState(0);
     const [wishlistItems, setWishlistItems] = useState([]);
 
     const addToWishlist = (product) => {
         setWishlistItems(prev => {
-            if (prev.find(item => item.id === product.id)) return prev;
+            if (prev.some(item => item.id === product.id)) return prev;
             return [...prev, product];
         });
     };
@@ -22,34 +24,59 @@ export const CartProvider = ({ children }) => {
     };
 
     // Fetch Cart from backend 
-     const fetchCart = async () => {
-    try {
-        const res = await fetch(`${BASEURL}/api/cart/`);
+     const getAuthHeaders = () => {
+        return token ? { Authorization: `Token ${token}` } : {};
+    };
 
-        if (!res.ok) {
-            throw new Error('Failed to fetch cart');
+    const fetchCart = async () => {
+        if (!token) {
+            setCartItems([]);
+            setTotal(0);
+            return;
         }
 
-        const data = await res.json();
-        setCartItems(data.items || []);
-        setTotal(data.total || 0);
+        try {
+            const res = await fetch(`${BASEURL}/api/cart/`, {
+                headers: getAuthHeaders(),
+            });
 
-    } catch (error) {
-        console.error('Error fetching cart:', error);
-    }
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Failed to fetch cart: ${res.status} ${errorText}`);
+            }
+
+            const data = await res.json();
+            setCartItems(data.items || []);
+            setTotal(data.total || 0);
+
+        } catch (error) {
+            console.error('Error fetching cart:', error);
+        }
     };
     useEffect(() => {
         fetchCart();
-    }, []);
+    }, [token]);
     const addToCart = async (product) => {
+        if (!token) {
+            console.warn('Unable to add to cart: user is not authenticated.');
+            return;
+        }
+
         try {
-            await fetch(`${BASEURL}/api/cart/add/`, {
+            const res = await fetch(`${BASEURL}/api/cart/add/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                },                
+                    ...getAuthHeaders(),
+                },
                 body: JSON.stringify({ product_id: product }),
             });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Add to cart failed: ${res.status} ${errorText}`);
+            }
+
             fetchCart();
         } catch (error) {
             console.error('Error adding to cart:', error);
@@ -67,14 +94,26 @@ export const CartProvider = ({ children }) => {
 
     // Remove Product from Cart
     const removeFromCart = async (itemId) => {
+        if (!token) {
+            console.warn('Unable to remove from cart: user is not authenticated.');
+            return;
+        }
+
         try {
-            await fetch(`${BASEURL}/api/cart/remove/`, {
+            const res = await fetch(`${BASEURL}/api/cart/remove/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...getAuthHeaders(),
                 },
                 body: JSON.stringify({ item_id: itemId }),
             });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Remove from cart failed: ${res.status} ${errorText}`);
+            }
+
             fetchCart();
         } catch (error) {
             console.error('Error removing from cart:', error);
@@ -88,24 +127,47 @@ export const CartProvider = ({ children }) => {
             }
 
             try {
-                await fetch(`${BASEURL}/api/cart/update/`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ item_id: itemId, quantity }),
-                });
-
-                fetchCart();
-            } catch (error) { 
-                console.error('Error updating cart quantity:', error);
+            if (!token) {
+                console.warn('Unable to update cart quantity: user is not authenticated.');
+                return;
             }
+
+            const res = await fetch(`${BASEURL}/api/cart/update/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                body: JSON.stringify({ item_id: itemId, quantity }),
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Update cart quantity failed: ${res.status} ${errorText}`);
+            }
+
+            fetchCart();
+        } catch (error) { 
+            console.error('Error updating cart quantity:', error);
+        }
         };
     const clearCart = () => {
         setCartItems([]);
         setTotal(0);
     };
 
+    const value = useMemo(() => ({
+        cartItems,
+        total,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        wishlistItems,
+        addToWishlist,
+        removeFromWishlist,
+        isWishlisted,
+    }), [cartItems, total, token, wishlistItems]);
+
     return (
-        <CartContext.Provider value={{ cartItems, total, addToCart, removeFromCart, updateQuantity, clearCart, wishlistItems, addToWishlist, removeFromWishlist, isWishlisted }}>
+        <CartContext.Provider value={value}>
             {children}
         </CartContext.Provider>
     );

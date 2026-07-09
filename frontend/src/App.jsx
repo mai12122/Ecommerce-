@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from "react-router-dom";
 import ProductList from "./pages/ProductList";
 import ProductDetail from "./pages/ProductDetails";
@@ -21,11 +22,28 @@ function ProtectedRoute({ children }) {
 function AppContent() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const [showSigninMessage, setShowSigninMessage] = useState(false);
   const authPages = ["/signin", "/signup"];
   const isAuthPage = authPages.includes(location.pathname);
   const hideNavbar = isAuthPage || location.pathname === "/" || location.pathname.startsWith("/products/") || location.pathname === "/wishlist" || location.pathname === "/profile" || location.pathname === "/cart" || location.pathname === "/checkout" || location.pathname === "/shop" || location.pathname === "/orders";
+
+  useEffect(() => {
+    if (location.state?.showSigninSuccess) {
+      setShowSigninMessage(true);
+      globalThis.history.replaceState({}, document.title, globalThis.location.pathname + globalThis.location.search);
+      const timer = setTimeout(() => setShowSigninMessage(false), 4500);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [location.state]);
+
   return (
     <>
+      {showSigninMessage && (
+        <div className="fixed left-1/2 top-5 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl bg-emerald-500/95 px-5 py-3 text-center text-sm font-semibold text-white shadow-xl shadow-emerald-900/20">
+          Signed in successfully. Welcome back!
+        </div>
+      )}
       {!hideNavbar && <NavBar />}
       <Routes>
         <Route path="/signin" element={isAuthenticated ? <Navigate to="/" replace /> : <SignInPage />} />
