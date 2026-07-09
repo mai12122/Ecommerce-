@@ -155,7 +155,7 @@ function ProfilePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0F1420] pb-24">
+        <div className="min-h-screen bg-white pb-24">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -164,28 +164,28 @@ function ProfilePage() {
                 className="hidden"
             />
 
-            <header className="bg-[#19233C] pt-6 pb-4 px-5">
+            <header className="bg-black pt-5 pb-4 px-4">
                 <div className="flex justify-between items-center">
-                    <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-[#4E6793] hover:text-[#E5E7EB] transition-colors">
+                    <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                         <span className="text-sm font-medium">Back</span>
                     </button>
-                    <h2 className="text-[#E5E7EB] text-lg font-semibold">Profile</h2>
+                    <h2 className="text-white text-lg font-semibold">Profile</h2>
                     {isEditing ? (
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleCancel}
                                 disabled={isSaving}
-                                className="text-[#4E6793] hover:text-[#E5E7EB] text-sm font-medium transition-colors disabled:opacity-50"
+                                className="text-gray-400 hover:text-white text-sm font-medium transition-colors disabled:opacity-50"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving || !hasUnsavedChanges()}
-                                className="bg-[#4E6793] hover:bg-[#5E7DB3] disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                                className="bg-black hover:bg-gray-800 disabled:opacity-50 border border-gray-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
                             >
                                 {isSaving ? (
                                     <>
@@ -205,7 +205,7 @@ function ProfilePage() {
                     ) : (
                         <button
                             onClick={() => setIsEditing(true)}
-                            className="flex items-center gap-1.5 text-[#4E6793] hover:text-[#E5E7EB] text-sm font-medium transition-colors"
+                            className="flex items-center gap-1.5 text-gray-400 hover:text-white text-sm font-medium transition-colors"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -216,10 +216,10 @@ function ProfilePage() {
                 </div>
             </header>
             {saveMessage && (
-                <div className={`mx-4 mt-3 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 ${
+                <div className={`mx-4 mt-3 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2 ${
                     saveMessage.type === "success" 
-                        ? "bg-green-500/20 text-green-400 border border-green-500/30" 
-                        : "bg-red-500/20 text-red-400 border border-red-500/30"
+                        ? "bg-green-50 text-green-800 border border-green-200" 
+                        : "bg-red-50 text-red-800 border border-red-200"
                 }`}>
                     {saveMessage.type === "success" ? (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -234,12 +234,12 @@ function ProfilePage() {
                 </div>
             )}
 
-            <div className="mx-4 mt-4 bg-[#19233C] rounded-2xl p-5 border border-[#2B3D5F]">
+            <div className="mx-4 mt-4 bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
                 <div className="flex items-start gap-4">
                     <button 
                         onClick={triggerFileInput}
                         disabled={isUploading}
-                        className="relative w-20 h-20 bg-[#2B3D5F] rounded-full flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-[#4E6793] transition-all disabled:opacity-50 "
+                        className="relative w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-gray-400 transition-all disabled:opacity-50 "
                     >
                         {getAvatarDisplay() ? (
                             <img 
@@ -248,7 +248,7 @@ function ProfilePage() {
                                 className="w-full h-full object-cover"
                             />
                         ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#4E6793]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         )}
@@ -270,49 +270,49 @@ function ProfilePage() {
                     <div className="flex-1 min-w-0 space-y-3">
                         {/* Name */}
                         <div>
-                            <label className="block text-xs text-[#4E6793] mb-1">Name</label>
+                            <label className="block text-xs text-gray-500 mb-1">Name</label>
                             {isEditing ? (
                                 <input
                                     type="text"
                                     value={editedProfile.name}
                                     onChange={(e) => handleInputChange("name", e.target.value)}
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4E6793]"
+                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
                                     placeholder="Your name"
                                 />
                             ) : (
-                                <p className="text-[#E5E7EB] font-medium">{user?.name || "User"}</p>
+                                <p className="text-gray-900 font-medium">{user?.name || "User"}</p>
                             )}
                         </div>
                         
                         {/* Email */}
                         <div>
-                            <label className="block text-xs text-[#4E6793] mb-1">Email</label>
+                            <label className="block text-xs text-gray-500 mb-1">Email</label>
                             {isEditing ? (
                                 <input
                                     type="email"
                                     value={editedProfile.email}
                                     onChange={(e) => handleInputChange("email", e.target.value)}
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4E6793]"
+                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
                                     placeholder="your@email.com"
                                 />
                             ) : (
-                                <p className="text-[#4E6793] text-sm">{user?.email || ""}</p>
+                                <p className="text-gray-600 text-sm">{user?.email || ""}</p>
                             )}
                         </div>
                         
                         {/* Phone */}
                         <div>
-                            <label className="block text-xs text-[#4E6793] mb-1">Phone</label>
+                            <label className="block text-xs text-gray-500 mb-1">Phone</label>
                             {isEditing ? (
                                 <input
                                     type="tel"
                                     value={editedProfile.phone}
                                     onChange={(e) => handleInputChange("phone", e.target.value)}
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#4E6793]"
+                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
                                     placeholder="+1234567890"
                                 />
                             ) : (
-                                <p className="text-[#4E6793] text-sm">{user?.phone || ""}</p>
+                                <p className="text-gray-600 text-sm">{user?.phone || ""}</p>
                             )}
                         </div>
                     </div>
@@ -321,7 +321,7 @@ function ProfilePage() {
                 <button
                     onClick={triggerFileInput}
                     disabled={isUploading}
-                    className="w-full mt-4 bg-[#0F1420] hover:bg-[#2B3D5F] disabled:opacity-50 text-[#4E6793] py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm"
+                    className="w-full mt-4 bg-white hover:bg-gray-50 disabled:opacity-50 border border-gray-200 text-black py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm font-medium"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -331,7 +331,7 @@ function ProfilePage() {
                 </button>
             </div>
 
-            <div className="mx-4 mt-4 bg-[#19233C] rounded-2xl p-5 border border-[#2B3D5F]">
+            <div className="mx-4 mt-4 bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
                 <div className="grid grid-cols-4 gap-4">
                     {[
                         { label: "Wishlist", icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", badge: wishlistItems.length > 0 ? wishlistItems.length : null },
@@ -340,35 +340,35 @@ function ProfilePage() {
                         { label: "Coupon", icon: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" },
                     ].map((item) => (
                         <button key={item.label} onClick={() => item.path && navigate(item.path)} className="flex flex-col items-center gap-2 relative">
-                            <div className="w-12 h-12 bg-[#2B3D5F] rounded-2xl flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#4E6793]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                                 </svg>
                                 {item.badge && (
-                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                                         {item.badge}
                                     </span>
                                 )}
                             </div>
-                            <span className="text-[11px] text-[#4E6793] font-medium">{item.label}</span>
+                            <span className="text-[11px] text-gray-600 font-medium">{item.label}</span>
                         </button>
                     ))}
                 </div>
             </div>
-            <div className="mx-4 mt-4 bg-[#19233C] rounded-2xl border border-[#2B3D5F] overflow-hidden">
+            <div className="mx-4 mt-4 bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                 {menuItems.map((item, index) => (
                     <button 
                         key={item.label}
                         onClick={() => item.path && navigate(item.path)}
-                        className={`w-full flex items-center justify-between p-4 hover:bg-[#2B3D5F] transition-colors ${index !== menuItems.length - 1 ? 'border-b border-[#2B3D5F]' : ''}`}
+                        className={`w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${index !== menuItems.length - 1 ? 'border-b border-gray-200' : ''}`}
                     >
                         <div className="flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#4E6793]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                             </svg>
-                            <span className="text-sm text-[#E5E7EB] font-medium">{item.label}</span>
+                            <span className="text-sm text-gray-900 font-medium">{item.label}</span>
                         </div>
-                        <svg className="w-5 h-5 text-[#4E6793]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
@@ -377,7 +377,7 @@ function ProfilePage() {
             <div className="mx-4 mt-6">
                 <button
                     onClick={handleSignOut}
-                    className="w-full bg-[#19233C] text-red-400 py-4 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 border border-[#2B3D5F] hover:bg-[#2B3D5F] transition-colors"
+                    className="w-full bg-white text-red-600 py-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 border border-gray-200 hover:bg-red-50 transition-colors"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

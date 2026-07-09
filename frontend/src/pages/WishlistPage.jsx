@@ -28,13 +28,13 @@ function WishlistPage() {
   // Empty state
   if (wishlistItems.length === 0) {
     return (
-      <div className="min-h-screen bg-[#0F1420] pb-24">
+      <div className="min-h-screen bg-white pb-24">
         {/* Header */}
-        <div className="bg-[#19233C] sticky top-0 z-40 flex items-center justify-between px-4 py-4 border-b border-[#2B3D5F]">
+        <div className="bg-black sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b border-gray-800">
           <button onClick={handleBack} className="p-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-[#E5E7EB]"
+              className="h-5 w-5 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -47,11 +47,11 @@ function WishlistPage() {
               />
             </svg>
           </button>
-          <h1 className="text-lg font-semibold text-[#E5E7EB]">Wishlist</h1>
+          <h1 className="text-lg font-semibold text-white">Wishlist</h1>
           <Link to="/cart" className="relative">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-[#E5E7EB]"
+              className="h-6 w-6 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -64,7 +64,7 @@ function WishlistPage() {
               />
             </svg>
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                 {cartCount}
               </span>
             )}
@@ -74,10 +74,10 @@ function WishlistPage() {
         {/* Empty State */}
         <div className="flex flex-col items-center justify-center px-8 pt-24">
           {/* Heart Icon */}
-          <div className="w-24 h-24 bg-[#19233C] rounded-full flex items-center justify-center mb-6 border border-[#2B3D5F]">
+          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6 border border-gray-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-12 text-[#4E6793]"
+              className="h-12 w-12 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -91,15 +91,15 @@ function WishlistPage() {
             </svg>
           </div>
 
-          <h2 className="text-2xl font-bold text-[#E5E7EB] mb-2">
+          <h2 className="text-2xl font-bold text-black mb-2">
             My Wishlist is Empty!
           </h2>
-          <p className="text-[#4E6793] text-sm text-center mb-6">
+          <p className="text-gray-500 text-sm text-center mb-6">
             Tap heart button to start saving<br />your favorite items.
           </p>
           <button
             onClick={handleExplore}
-            className="bg-[#4E6793] text-white px-10 py-3 rounded-xl text-sm font-semibold hover:bg-[#4E6793]/90 transition-colors shadow-lg shadow-[#4E6793]/25"
+            className="bg-black text-white px-10 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
           >
             Explore
           </button>
@@ -110,9 +110,9 @@ function WishlistPage() {
 
   // Wishlist items
   return (
-    <div className="min-h-screen bg-[#0F1420] pb-24">
+    <div className="min-h-screen bg-white pb-24">
       {/* Header */}
-      <div className="bg-[#19233C] sticky top-0 z-40 flex items-center justify-between px-4 py-4 border-b border-[#2B3D5F]">
+      <div className="bg-black sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b border-gray-800">
         <button onClick={handleBack} className="p-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -158,10 +158,10 @@ function WishlistPage() {
         {wishlistItems.map((product) => (
           <div
             key={product.id}
-            className="bg-[#19233C] rounded-2xl overflow-hidden border border-[#2B3D5F] flex items-stretch"
+            className="bg-white rounded-lg overflow-hidden border border-gray-200 flex items-stretch hover:shadow-md transition-shadow"
           >
             {/* Product Image */}
-            <div className="w-28 h-28 shrink-0 bg-[#2B3D5F] rounded-2xl m-3 flex items-center justify-center overflow-hidden">
+            <div className="w-28 h-28 shrink-0 bg-gray-100 rounded-lg m-3 flex items-center justify-center overflow-hidden">
               <img
                 src={`${BASEURL}${product.image}`}
                 alt={product.name}
@@ -171,11 +171,11 @@ function WishlistPage() {
 
             {/* Product Info */}
             <div className="flex-1 py-3 pr-4 flex flex-col justify-center">
-              <h3 className="text-base font-semibold text-[#E5E7EB] leading-tight">
+              <h3 className="text-base font-semibold text-gray-900 leading-tight">
                 {product.name}
               </h3>
               <div className="flex items-center gap-1 mt-1">
-                <span className="text-xs text-[#4E6793]">Review (</span>
+                <span className="text-xs text-gray-500">Review (</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-3 w-3 text-yellow-500 fill-yellow-500"
@@ -183,9 +183,9 @@ function WishlistPage() {
                 >
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
-                <span className="text-xs text-[#4E6793]">4.8 )</span>
+                <span className="text-xs text-gray-500">4.8 )</span>
               </div>
-              <p className="text-lg font-bold text-[#E5E7EB] mt-1">
+              <p className="text-lg font-bold text-black mt-1">
                 ${product.price}
               </p>
 
@@ -193,7 +193,7 @@ function WishlistPage() {
               <div className="flex items-center justify-end gap-2 mt-2">
                 <button
                   onClick={() => handleAddToBag(product)}
-                  className="bg-[#4E6793] text-white text-xs font-medium px-4 py-1.5 rounded-full hover:bg-[#4E6793]/90 transition-colors"
+                  className="bg-black text-white text-xs font-medium px-4 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
                 >
                   Add to Bag
                 </button>

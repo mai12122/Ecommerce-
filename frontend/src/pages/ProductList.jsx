@@ -101,21 +101,21 @@ function ProductList() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F1420] pb-20 md:pb-0">
+    <div className="min-h-screen bg-white pb-20 md:pb-0">
       {showSigninMessage && (
-        <div className="fixed left-1/2 top-5 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-2xl bg-emerald-500/95 px-5 py-3 text-center text-sm font-semibold text-white shadow-xl shadow-emerald-900/20">
+        <div className="fixed left-1/2 top-5 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-lg bg-emerald-600 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg">
           Signed in successfully. Welcome back!
         </div>
       )}
-      <header className="bg-[#19233C] pt-6 pb-4 px-5">
-        <div className="flex justify-between items-center mb-4">
-          <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md">
-            <img src={GenZLogo} alt="GenZ" className="h-10 w-auto" />
-          </div>
-          <Link to="/cart" className="relative">
+      
+      {/* Header */}
+      <header className="bg-black sticky top-0 z-40 border-b border-gray-800">
+        <div className="px-4 md:px-5 py-2.5 md:py-3 flex justify-between items-center gap-3">
+          <h1 className="text-lg md:text-xl font-bold text-white tracking-tight">GENZ</h1>
+          <Link to="/cart" className="relative text-white hover:text-gray-400 transition-colors flex-shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-[#E5E7EB]"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -128,67 +128,64 @@ function ProductList() {
               />
             </svg>
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                 {cartCount}
               </span>
             )}
           </Link>
         </div>
 
-        <h2 className="text-[#E5E7EB] text-lg font-medium mb-3">
-          {user ? `Welcome, ${user.name.split(" ")[0]}!` : "Discover"}
-        </h2>
-        {selectedCategory !== "All" && (
-          <div className="mb-3 flex items-center gap-2">
-            <span className="text-sm text-[#4E6793]">Filtering by:</span>
-            <button
-              onClick={() => {
-                setSelectedCategory("All");
-                globalThis.history.replaceState({}, '', globalThis.location.pathname);
-              }}
-              className="px-3 py-1 bg-[#4E6793] text-[#E5E7EB] text-xs rounded-full hover:bg-[#2B3D5F] transition-colors"
+        {/* Search Bar */}
+        <div className="px-4 md:px-5 pb-2.5 md:pb-3">
+          <div className="flex items-center bg-gray-100 rounded-full px-3 md:px-4 py-2 md:py-2.5 gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 md:h-5 w-4 md:w-5 text-gray-400 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
             >
-              {selectedCategory} ✕
-            </button>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 outline-none text-sm bg-transparent placeholder-gray-500 text-gray-900"
+            />
           </div>
-        )}
+        </div>
 
-        <div className="flex items-center bg-[#E5E7EB] rounded-full px-4 py-2.5 gap-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-400 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 outline-none text-sm text-[#0F1420] bg-transparent placeholder-gray-500"
-          />
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-500 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-            />
-          </svg>
+        {/* Category Tabs */}
+        <div className="px-4 md:px-5 pb-2.5 md:pb-3 flex gap-2 overflow-x-auto scrollbar-hide">
+          {["All", ...categories.map(cat => cat.name)].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => {
+                setSelectedCategory(cat);
+                if (cat === "All") {
+                  globalThis.history.replaceState({}, '', globalThis.location.pathname);
+                } else {
+                  const newParams = new URLSearchParams(globalThis.location.search);
+                  newParams.set("category", cat);
+                  globalThis.history.replaceState({}, "", `?${newParams.toString()}`);
+                }
+              }}
+              className={`whitespace-nowrap px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors flex-shrink-0 ${
+                selectedCategory === cat
+                  ? "bg-black text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </header>
 
@@ -210,15 +207,20 @@ function ProductList() {
         onClose={() => setIsModalOpen(false)}
       />
 
-      <main className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-4 gap-4">
+      {/* Products Grid */}
+      <main className="px-3 md:px-4 py-4 md:py-6">
         {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         ) : (
-          <p className="col-span-full text-center text-[#E5E7EB] py-10">
-            No products found{selectedCategory !== "All" ? ` in "${selectedCategory}"` : ""}.
-          </p>
+          <div className="text-center py-12 md:py-16">
+            <p className="text-gray-500 text-sm md:text-base">
+              No products found{selectedCategory !== "All" ? ` in "${selectedCategory}"` : ""}.
+            </p>
+          </div>
         )}
       </main>
     </div>

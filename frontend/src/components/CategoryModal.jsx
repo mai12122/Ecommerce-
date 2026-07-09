@@ -1,107 +1,97 @@
 import { useState } from "react";
 
-const COLORS = {
-  bgDarkest: "#0F1420",
-  bgPrimary: "#19233C",
-  bgSecondary: "#2B3D5F",
-  bgAccent: "#4E6793",
-  textLight: "#E5E7EB",
-};
-
 function CategoryModal({ categories, selectedCategory, onSelectCategory, isOpen, onClose }) {
   if (!isOpen) return null;
-
-  const handleCategoryClick = (categoryName) => {
-    onSelectCategory(categoryName);
-    onClose();
-  };
 
   return (
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/70 z-40 backdrop-blur-md"
+        className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Centered Modal Card */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          className="w-full max-w-sm rounded-3xl shadow-2xl animate-in fade-in zoom-in-95 border border-[#4E6793]/30"
-          style={{ backgroundColor: COLORS.bgPrimary }}
-        >
-          {/* Header with gradient background */}
-          <div className="relative overflow-hidden p-6 border-b border-[#4E6793]/30">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#7C3AED]/10 to-[#A855F7]/10"></div>
-            <div className="relative flex justify-between items-center">
-              <div>
-                <h3 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#7C3AED] to-[#A855F7]">
-                  Shop by
-                </h3>
-                <p className="text-sm text-[#4E6793] mt-1">Select your category</p>
-              </div>
-              <button
-                onClick={onClose}
-                className="text-[#4E6793] hover:text-[#A855F7] transition-all p-2 hover:bg-[#2B3D5F] rounded-lg"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
+      {/* Promotional Modal - Centered */}
+      <div 
+        className="fixed z-50 p-4"
+        style={{
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '90%',
+          maxWidth: '28rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <div className="rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 bg-gradient-to-br from-blue-600 to-purple-600 overflow-hidden w-full">
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 md:top-6 right-4 md:right-6 text-white/80 hover:text-white p-2 rounded-lg transition-colors z-10"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
 
           {/* Content */}
-          <div className="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
-            {/* All Products Button - Featured */}
-            <button
-              onClick={() => handleCategoryClick("All")}
-              className={`w-full px-6 py-5 rounded-2xl font-bold text-lg transition-all transform hover:scale-105 ${
-                selectedCategory === "All"
-                  ? `bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white shadow-lg shadow-purple-500/30`
-                  : `bg-[#2B3D5F] text-[#E5E7EB] hover:bg-[#4E6793] hover:shadow-lg`
-              }`}
-            >
-              ✨ All Products
-            </button>
-
-            {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-[#2B3D5F] via-[#4E6793] to-[#2B3D5F] my-4"></div>
-
-            {/* Category Buttons Grid */}
-            <div className="grid grid-cols-2 gap-3">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryClick(category.name)}
-                  className={`relative group px-4 py-4 rounded-2xl font-semibold text-base transition-all transform hover:scale-105 overflow-hidden ${
-                    selectedCategory === category.name
-                      ? `bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white shadow-lg shadow-purple-500/30`
-                      : `bg-[#2B3D5F] text-[#E5E7EB] hover:bg-[#4E6793]`
-                  }`}
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-r from-[#A855F7]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`}></div>
-                  <span className="relative">{category.name}</span>
-                </button>
-              ))}
+          <div className="p-6 md:p-8 text-center text-white flex flex-col items-center justify-center">
+            {/* Discount Badge */}
+            <div className="mb-4 md:mb-6">
+              <span className="inline-block bg-yellow-300 text-black font-black text-3xl md:text-4xl px-6 md:px-8 py-2 md:py-3 rounded-lg transform -rotate-2">
+                40% OFF
+              </span>
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="p-6 border-t border-[#4E6793]/30 bg-gradient-to-r from-[#2B3D5F]/20 to-transparent">
+            {/* Main Text */}
+            <h2 className="text-2xl md:text-4xl font-black mb-3 md:mb-4 leading-tight">
+              MEGA SALE!
+            </h2>
+            
+            <p className="text-base md:text-lg text-white/90 mb-2 md:mb-3">
+              Limited Time Offer
+            </p>
+
+            <p className="text-sm md:text-base text-white/80 mb-6 md:mb-8 max-w-xs">
+              Get up to <span className="font-bold text-yellow-300">40% discount</span> on your favorite items!
+            </p>
+
+            {/* Offer Details */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 mb-6 md:mb-8 w-full max-w-xs">
+              <div className="space-y-2 md:space-y-3 text-sm md:text-base">
+                <div className="flex items-center justify-between">
+                  <span className="text-white/90">✓ Free Shipping</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-white/90">✓ Easy Returns</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-white/90">✓ Best Prices</span>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Button */}
             <button
               onClick={onClose}
-              className="w-full px-6 py-3 rounded-xl bg-[#4E6793] text-[#E5E7EB] font-semibold hover:bg-[#5A7BA8] transition-all hover:shadow-lg"
+              className="w-full max-w-xs px-6 py-3 md:py-4 bg-yellow-300 text-black font-bold rounded-lg hover:bg-yellow-400 transition-all transform hover:scale-105 text-base md:text-lg mb-4"
             >
-              Continue Shopping
+              SHOP NOW
             </button>
+
+            {/* Countdown Timer (Optional) */}
+            <p className="text-xs md:text-sm text-white/70">
+              ⏱ Limited offer - Shop now!
+            </p>
           </div>
         </div>
       </div>

@@ -22,14 +22,6 @@ function ShopPage() {
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const { cartItems } = useCart();
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const colors = {
-    bgMain: "bg-[#0F1420]",
-    cardBase: "bg-[#19233C]",
-    cardHover: "hover:bg-[#2B3D5F]",
-    accent: "border-[#4E6793]",
-    textMain: "text-[#E5E7EB]",
-    textMuted: "text-[#4E6793]",
-  };
 
   useEffect(() => {
     Promise.all([
@@ -59,10 +51,10 @@ function ShopPage() {
 
   if (loading) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${colors.bgMain}`}>
+      <div className={`min-h-screen flex items-center justify-center bg-white`}>
         <div className="animate-pulse flex flex-col items-center">
-          <div className={`h-4 w-32 mb-4 rounded ${colors.cardBase}`}></div>
-          <div className={`h-2 w-48 rounded ${colors.cardBase}`}></div>
+          <div className={`h-4 w-32 mb-4 rounded bg-gray-200`}></div>
+          <div className={`h-2 w-48 rounded bg-gray-200`}></div>
         </div>
       </div>
     );
@@ -70,26 +62,25 @@ function ShopPage() {
 
   if (error) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${colors.bgMain}`}>
-        <div className="text-center p-6 rounded-lg border border-red-900/50 bg-red-900/10">
-          <h2 className="text-xl font-bold text-red-400 mb-2">Error</h2>
-          <p className="text-gray-400">{error}</p>
+      <div className={`min-h-screen flex items-center justify-center bg-white`}>
+        <div className="text-center p-6 rounded-lg border border-red-200 bg-red-50">
+          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-600">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${colors.bgMain} ${colors.textMain} pb-20`}>
-      <header className="bg-[#19233C] pt-6 pb-4 px-5">
-        <div className="flex justify-between items-center mb-2">
-          <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md">
-            <img src={GenZLogo} alt="GenZ" className="h-10 w-auto" />
-          </div>
-          <Link to="/cart" className="relative">
+    <div className={`min-h-screen bg-white pb-20`}>
+      {/* Header */}
+      <header className="bg-black sticky top-0 z-40 border-b border-gray-800">
+        <div className="px-4 md:px-5 py-2.5 md:py-3 flex justify-between items-center gap-3">
+          <h1 className="text-lg md:text-xl font-bold text-white tracking-tight">GENZ</h1>
+          <Link to="/cart" className="relative text-white hover:text-gray-400 transition-colors flex-shrink-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-[#E5E7EB]"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -102,66 +93,51 @@ function ShopPage() {
               />
             </svg>
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                 {cartCount}
               </span>
             )}
           </Link>
         </div>
-        <h2 className="text-[#E5E7EB] text-lg font-medium text-center">Shop Categories</h2>
       </header>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      {/* Category Grid */}
+      <div className="px-3 md:px-4 py-4 md:py-6">
+        <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6">Shop by Category</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
           {categories.map((cat) => {
             const image = getCategoryImage(cat.name);
             return (
               <Link
                 key={cat.id}
                 to={`/?category=${encodeURIComponent(cat.name)}`}
-                className={`
-                  group relative overflow-hidden rounded-2xl 
-                  ${colors.cardBase} ${colors.cardHover} 
-                  ${colors.accent} border
-                  transition-all duration-300 ease-in-out
-                  hover:shadow-lg hover:shadow-[#0F1420]/50
-                  hover:-translate-y-1
-                `}
+                className="group relative overflow-hidden rounded-lg transition-all hover:shadow-md"
               >
-                <div className="flex flex-col h-full">
-                  <div className="h-48 w-full overflow-hidden relative bg-[#0F1420]">
-                    {image ? (
-                      <>
-                        <img
-                          src={image}
-                          alt={cat.name}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient from-[#0F1420]/80 to-transparent" />
-                      </>
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center opacity-20">
-                        <span className="text-4xl">📦</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-6 flex items-center justify-between">
-                    <h2 className="text-xl font-bold tracking-wide uppercase">
+                <div className="h-40 md:h-48 w-full bg-gray-200 overflow-hidden relative">
+                  {image ? (
+                    <>
+                      <img
+                        src={image}
+                        alt={cat.name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+                    </>
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center opacity-30">
+                      <span className="text-4xl md:text-5xl">👕</span>
+                    </div>
+                  )}
+                </div>
+                <div className="absolute inset-0 flex items-end p-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white tracking-wide uppercase">
                       {cat.name}
-                    </h2>
-                    <p className={`text-sm ${colors.textMuted} flex items-center gap-1 group-hover:translate-x-1 transition-transform`}>
-                      View Products
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
+                    </h3>
+                    <p className="text-gray-200 text-sm flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      Shop Now
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </p>
                   </div>
