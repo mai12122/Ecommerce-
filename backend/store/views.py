@@ -11,7 +11,7 @@ import logging
 import requests
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Product, Category, Cart, CartItem, Order, OrderItem, UserProfile
+from .models import Product, Category, Cart, CartItem, Order, OrderItem, UserProfile, Notification
 from .serializers import (
     ProductSerializer,
     CategorySerializer,
@@ -20,6 +20,7 @@ from .serializers import (
     OrderSerializer,
     SignupSerializer,
     OrderCreateSerializer,
+    NotificationSerializer,
 )
 
 
@@ -66,6 +67,18 @@ def get_categories(request):
     categories = Category.objects.all()
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_notifications(request):
+    notifications = Notification.objects.filter(is_read=False).order_by('-created_at')[:10]
+    for notification in notifications:
+        notification.is_read = True
+        notification.save(update_fields=['is_read'])
+
+    serializer = NotificationSerializer(notifications, many=True)
+    return Response(serializer.data)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

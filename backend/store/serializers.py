@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Cart, CartItem, Product, Category, Order, OrderItem, UserProfile
+from .models import Cart, CartItem, Product, Category, Order, OrderItem, UserProfile, Notification
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,6 +11,11 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['id', 'notification_type', 'title', 'message', 'product', 'created_at', 'is_read']
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
     product_price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2, read_only=True)

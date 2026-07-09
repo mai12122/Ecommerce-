@@ -4,7 +4,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import ProductCard from "../components/ProductCard";
 import CategoryModal from "../components/CategoryModal";
-import GenZLogo from "../assets/GenZlogo.png";
+import NotificationBell from "../components/NotificationBell";
 
 const COLORS = {
   bgDarkest: "#0F1420",    
@@ -22,6 +22,7 @@ function ProductList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showSigninMessage, setShowSigninMessage] = useState(false);
+  const [toast, setToast] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -97,6 +98,35 @@ function ProductList() {
     loadInitialData();
   }, [BASEURL]);
 
+  useEffect(() => {
+    const loadNotifications = async () => {
+      if (!user) return;
+
+      try {
+        const authToken = user?.token || localStorage.getItem("auth_token");
+        const res = await fetch(`${BASEURL}/api/notifications/`, {
+          headers: {
+            Authorization: `Token ${authToken}`,
+          },
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const latest = data[0];
+          setToast({ title: latest.title, message: latest.message });
+          const timer = window.setTimeout(() => setToast(null), 5000);
+          return () => window.clearTimeout(timer);
+        }
+      } catch {
+        // Ignore notification fetch errors.
+      }
+    };
+
+    loadNotifications();
+  }, [BASEURL, user]);
+
   // Open the modal only when the user transitions from logged out to logged in.
   useEffect(() => {
     if (prevUserRef.current === undefined) {
@@ -134,6 +164,13 @@ function ProductList() {
 
   return (
     <div className="min-h-screen bg-white pb-20 md:pb-0">
+      {toast && (
+        <div className="fixed right-4 top-20 z-50 max-w-sm rounded-2xl border border-amber-200 bg-white px-4 py-3 shadow-xl">
+          <p className="text-sm font-semibold text-gray-900">{toast.title}</p>
+          <p className="mt-1 text-sm text-gray-600">{toast.message}</p>
+        </div>
+      )}
+
       {showSigninMessage && (
         <div className="fixed left-1/2 top-5 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-lg bg-emerald-600 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg">
           Signed in successfully. Welcome back!
@@ -144,27 +181,30 @@ function ProductList() {
       <header className="bg-black sticky top-0 z-40 border-b border-gray-800">
         <div className="px-4 md:px-5 py-2.5 md:py-3 flex justify-between items-center gap-3">
           <h1 className="text-lg md:text-xl font-bold text-white tracking-tight">GENZ</h1>
-          <Link to="/cart" className="relative text-white hover:text-gray-400 transition-colors flex-shrink-0">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
-              />
-            </svg>
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <Link to="/cart" className="relative text-white hover:text-gray-400 transition-colors flex-shrink-0">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
+                />
+              </svg>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          </div>
         </div>
 
         {/* Search Bar */}

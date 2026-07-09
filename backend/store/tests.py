@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.test import TestCase
 from unittest.mock import patch
-from .models import Category, Product, Cart, CartItem
+from .models import Category, Product, Cart, CartItem, Notification
 
 class StoreAPITestCase(TestCase):
     def setUp(self):
@@ -49,6 +49,29 @@ class StoreAPITestCase(TestCase):
         cart_response = self.client.get(reverse('get_cart'))
         self.assertEqual(cart_response.status_code, status.HTTP_200_OK)
         self.assertEqual(cart_response.data['items'][0]['product'], self.product.id)
+
+    def test_creating_product_creates_new_product_notification(self):
+        Product.objects.create(
+            category=self.category,
+            name='New Arrival Product',
+            description='A new product',
+            price='12.50',
+            discount_percentage=0,
+        )
+
+        notification = Notification.objects.filter(notification_type='new_product').order_by('-created_at').first()
+        self.assertIsNotNone(notification)
+        self.assertEqual(notification.title, 'New product available')
+        self.assertIn('New Arrival Product', notification.message)
+
+    def test_updating_discount_creates_new_discount_notification(self):
+        self.product.discount_percentage = 20
+        self.product.save()
+
+        notification = Notification.objects.filter(notification_type='new_discount').order_by('-created_at').first()
+        self.assertIsNotNone(notification)
+        self.assertEqual(notification.title, 'New discount available')
+        self.assertIn('20%', notification.message)
 
     @patch('store.views.requests.get')
     def test_google_oauth_signin_creates_user_and_returns_token(self, mock_get):
