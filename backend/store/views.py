@@ -2,7 +2,8 @@ import base64
 import uuid
 from django.core.files.base import ContentFile
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
@@ -180,14 +181,17 @@ def get_orders(request):
 @api_view(['POST'])
 @csrf_exempt
 @permission_classes([AllowAny])
+@throttle_classes([ScopedRateThrottle])
 def signup(request):
+    logger = logging.getLogger(__name__)
+    logger.info(f'Signup request data: {request.data}')
     serializer = SignupSerializer(data=request.data)
     if not serializer.is_valid():
+        logger.error(f'Signup validation errors: {serializer.errors}')
         return Response({'errors': serializer.errors}, status=400)
 
     user = serializer.save()
     profile = UserProfile.objects.get(user=user)
-    logger = logging.getLogger(__name__)
     logger.info('User signup', extra={'user_id': user.id, 'email': user.email})
     # create auth token for SPA usage
     token, _ = Token.objects.get_or_create(user=user)
@@ -202,9 +206,13 @@ def signup(request):
     }, status=201)
 
 
+signup.throttle_scope = 'login'
+
+
 @api_view(['POST'])
 @csrf_exempt
 @permission_classes([AllowAny])
+@throttle_classes([ScopedRateThrottle])
 def signin(request):
     data = request.data
     email = data.get('email', '').strip()
@@ -241,6 +249,9 @@ def signin(request):
         'avatar': avatar_url,
         'token': token.key,
     })
+
+
+signin.throttle_scope = 'login'
 
 
 @api_view(['PUT'])

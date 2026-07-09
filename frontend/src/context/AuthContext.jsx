@@ -90,7 +90,21 @@ export const AuthProvider = ({ children }) => {
                 localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };
             }
-            return { success: false, error: data.error || "Registration failed" };
+            // Handle validation errors from backend
+            let errorMsg = "Registration failed";
+            if (data.errors) {
+                // Backend returns {'errors': serializer.errors} with field errors
+                const errors = data.errors;
+                if (errors.email) errorMsg = errors.email[0];
+                else if (errors.name) errorMsg = errors.name[0];
+                else if (errors.password) errorMsg = errors.password[0];
+                else if (errors.phone) errorMsg = errors.phone[0];
+                else errorMsg = JSON.stringify(errors);
+            } else if (data.error) {
+                errorMsg = data.error;
+            }
+            console.error('Signup error:', data);
+            return { success: false, error: errorMsg };
         } catch {
             return { success: false, error: "Network error. Please try again." };
         }

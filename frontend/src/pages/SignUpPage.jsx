@@ -31,8 +31,8 @@ function SignUpPage() {
             setError("Passwords do not match");
             return;
         }
-        if (form.password.length < 6) {
-            setError("Password must be at least 6 characters");
+        if (form.password.length < 8) {
+            setError("Password must be at least 8 characters");
             return;
         }
         if (!agreed) {
@@ -134,9 +134,8 @@ function SignUpPage() {
                                     name="phone"
                                     value={form.phone}
                                     onChange={handleChange}
-                                    placeholder="+1 (555) 000-0000"
+                                    placeholder="Your Phone Number"
                                     className="w-full bg-[#2B3D5F] text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-4 outline-none border border-[#2B3D5F] focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
-                                    required
                                 />
                             </div>
                         </div>
