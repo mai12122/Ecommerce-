@@ -1,126 +1,189 @@
 # Demo Runbook
 
-This runbook is for a live demo of the ecommerce app end to end.
-It covers:
-- commit → pipeline → deploy → app update
-- one deep-dive topic (security)
-- failure handling and self-healing or rollback
-- screenshots to capture as backup evidence
+This runbook is a simple guide for presenting the ecommerce project as a live delivery demo.
+It is meant to help you explain the full journey from code change to deployed application in a way that is easy to follow.
 
-## 1. Live end-to-end run
+## What this demo should show
+By the end of the presentation, the audience should understand:
+- how a small change moves from Git to a running app
+- how CI validates the change
+- how Docker Swarm deploys and manages the app
+- how the system handles failure and recovery
+- why security and observability matter in production
+
+---
+
+## 1. Before you start
+
+Make sure the following are ready:
+- the repository is available locally
+- Docker and Docker Swarm are running
+- the app is already deployed or can be deployed quickly
+- a browser tab is open to the frontend
+- a terminal is open in the repository root
+
+### Quick health check
+Run these commands first:
+
+```sh
+docker service ls
+curl http://127.0.0.1:8000/health/
+```
+
+Notes:
+- If you are using PowerShell, run the same commands directly in the shell; no separate Bash terminal is required.
+- If you are using WSL, make sure Docker Desktop is running and that WSL integration is enabled. The error `failed to connect to the docker API at unix:///var/run/docker.sock` means the Docker daemon is not available in that shell.
+
+Expected result:
+- Docker services are listed
+- the backend health endpoint returns a successful response
+
+---
+
+## 2. Main demo flow: from change to deployment
 
 ### Goal
-Show the full path from source change to running application.
+Show the full path from a code change to a live application update.
 
-### Suggested flow
-1. Make a small change in the repo, such as a text update in [README.md](README.md) or a harmless UI tweak.
-2. Commit and push the change.
-3. Let the CI workflow run from [.github/workflows/ci.yml](.github/workflows/ci.yml).
-4. Build and deploy the app to the local Docker Swarm stack using [docker-stack.yml](docker-stack.yml).
-5. Verify the app is live:
-   - Backend health: http://127.0.0.1:8000/health/
-   - Frontend: http://127.0.0.1:5173/
+### Step 1: Make a tiny change
+Use a harmless change such as updating the README or changing a small UI label.
 
-### Commands
-```bash
+```sh
 git add .
 git commit -m "Demo update"
 git push
+```
 
+### Step 2: Show the CI pipeline
+Explain that the pipeline in [.github/workflows/ci.yml](.github/workflows/ci.yml) will run automatically.
+
+What the audience should see:
+- backend tests run
+- frontend build runs
+- Docker images are built
+- the compose configuration is validated
+
+### Step 3: Deploy the update
+Deploy the stack using the Swarm definition in [docker-stack.yml](docker-stack.yml):
+
+```sh
 docker stack deploy -c docker-stack.yml ecommerce
 docker service ls
 docker service ps ecommerce_backend
 docker service ps ecommerce_frontend
 ```
 
-### What to show
-- GitHub Actions/CI success
-- Running Swarm services with replicas
-- The app responding on the published ports
+### Step 4: Verify the app is live
+Check both the backend and frontend:
 
-### Screenshot backup list
-- CI run summary
-- docker service ls output
-- browser showing the frontend
-- backend health response
-
----
-
-## 2. Deep-dive topic: security
-
-### Why this matters
-Security is the bridge from delivery to production readiness. For this stack, the important discussion is how to reduce attack surface and keep secrets out of code.
-
-### Demo points
-- Keep secrets out of source control and use environment variables or Docker secrets instead of hard-coded credentials.
-- Only publish the ports that are truly needed.
-- Keep the database service internal to the application network where possible.
-- Use health checks and centralized logs so failures are visible quickly.
-- Restrict admin routes and avoid exposing debug features in production.
-
-### Concrete repo evidence
-- The app already uses environment-based configuration in [backend/backend/settings.py](backend/backend/settings.py).
-- The stack uses named services and published ports in [docker-stack.yml](docker-stack.yml).
-- Backup and logging are handled separately from the app runtime, which supports safer operations.
-
-### Suggested talking points
-- “We do not want credentials embedded in the repo.”
-- “We expose only the frontend/backend ports needed by users.”
-- “We collect logs centrally so suspicious activity is easier to investigate.”
-
----
-
-## 3. Failure and recovery demo
-
-### Option A: self-healing after container crash
-This is the easiest live demo because it is already supported by Swarm.
-
-```bash
-docker ps --filter label=com.docker.swarm.service.name=ecommerce_backend --format "{{.ID}}"
-docker kill <container-id>
-docker service ps ecommerce_backend
-```
-
-### Expected result
-- One backend replica is killed.
-- Swarm starts a replacement task.
-- The app continues to respond through the service endpoint.
-
-### Verification
-```bash
+```sh
 curl http://127.0.0.1:8000/health/
 ```
 
-### Option B: rollback path
-If a bad image is deployed, rollback by redeploying the previous image tag or previous stack definition.
+Open the frontend in the browser:
+- http://127.0.0.1:5173/
 
-```bash
-docker service update --image ecommerce-backend:local ecommerce_backend
-```
-
-### Screenshot backup list
-- service ps output before and after the crash
-- health endpoint response during and after recovery
-- logs showing the replacement task
+### What to highlight during this part
+- the change was committed and pushed
+- CI validated the change
+- the deployment updated the running services
+- the app is still available after deployment
 
 ---
 
-## 4. Verified evidence already captured
+## 3. Simple security talking points
 
-The following checks were verified during the live run:
-- Swarm stack deployed successfully
-- Backend health endpoint returned 200
-- Frontend responded on port 5173
-- Backend and frontend were scaled up and back down live
-- One backend replica was killed and the app stayed available
-- Database backup was created successfully
-- Logs were collected centrally and searched through Loki
+Keep the explanation short and practical.
 
-## 5. Demo script summary
+### Easy points to mention
+- secrets should not be stored directly in the repository
+- only the required ports should be exposed
+- the database should stay on the internal application network where possible
+- health checks and logs help detect problems early
+- admin features should be restricted in production
 
-Use this as a short live presentation script:
-1. “Here is the app running behind a Swarm service.”
-2. “I will trigger a small change and show the pipeline and deploy flow.”
-3. “I will explain one security hardening point.”
-4. “I will crash one replica and show that the service self-heals.”
-5. “I will show the app still responding and the logs/backup workflow.”
+### Repo evidence you can point to
+- environment-based configuration in [backend/backend/settings.py](backend/backend/settings.py)
+- service and port setup in [docker-stack.yml](docker-stack.yml)
+- backup and logging support in the [backup](backup) and [monitoring](monitoring) folders
+
+### Short phrases you can use
+- “We do not want credentials embedded in the repo.”
+- “We only expose the ports that users actually need.”
+- “We use logs and health checks so issues are easier to spot.”
+
+---
+
+## 4. Failure and recovery demo
+
+This is the easiest live demo because Docker Swarm can recover automatically.
+
+### Step 1: Kill one backend container
+```sh
+docker ps --filter label=com.docker.swarm.service.name=ecommerce_backend --format "{{.ID}}"
+docker kill <container-id>
+```
+
+### Step 2: Show that Swarm replaces it
+```sh
+docker service ps ecommerce_backend
+```
+
+### Step 3: Verify the app still works
+```sh
+curl http://127.0.0.1:8000/health/
+```
+
+### Expected result
+- one backend replica is removed
+- Swarm starts a replacement container
+- the app continues to respond
+
+This is a strong example of self-healing infrastructure.
+
+---
+
+## 5. Backup and monitoring demo
+
+If you want to add one more operational story, show that backups and logs are part of the setup.
+
+### Create a database backup
+```sh
+bash ./backup/backup-db.sh
+```
+
+### Show centralized logging
+If the logging stack is running:
+
+```sh
+docker stack deploy -c docker-stack-logging.yml ecommerce-logging
+```
+
+Then mention:
+- Grafana: http://127.0.0.1:3000
+- Loki: http://127.0.0.1:3100
+
+---
+
+## 6. Suggested presenter script
+
+Use this as a short script during the demo:
+
+1. “Here is the application running behind a containerized deployment.”
+2. “I will make a small change and show how it flows through CI.”
+3. “I will deploy it to the running environment and verify that the app is still live.”
+4. “I will highlight one security practice that improves production readiness.”
+5. “I will simulate a container failure and show that the platform recovers automatically.”
+
+---
+
+## 7. Screenshot checklist
+
+Capture these as backup evidence if needed:
+- CI run summary
+- Docker service list output
+- the frontend in the browser
+- backend health response
+- Swarm service status after the container crash
+- backup output or logging screen
+
