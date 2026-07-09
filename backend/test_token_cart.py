@@ -1,49 +1,57 @@
+import json
 import os
 import sys
-import json
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'backend.settings'
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+
 import django
 
 django.setup()
 
 from django.contrib.auth.models import User
-from django.test import Client
+from django.test import Client, TestCase
 from store.models import Category, Product
 
-user, created = User.objects.get_or_create(username='test@example.com', defaults={'email': 'test@example.com'})
-user.set_password('password123')
-user.save()
 
-category, _ = Category.objects.get_or_create(name='TestCategory', slug='test-category')
-product, _ = Product.objects.get_or_create(
-    name='Test Product',
-    category=category,
-    defaults={'description': 'Test product', 'price': '9.99'},
-)
+class TokenCartIntegrationTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
+            username='test@example.com',
+            email='test@example.com',
+            password='password123',
+        )
+        cls.category = Category.objects.create(name='TestCategory', slug='test-category')
+        cls.product = Product.objects.create(
+            name='Test Product',
+            category=cls.category,
+            description='Test product',
+            price='9.99',
+        )
 
-client = Client()
-res = client.post(
-    '/api/auth/signin/',
-    data=json.dumps({'email': 'test@example.com', 'password': 'password123'}),
-    content_type='application/json',
-    HTTP_HOST='127.0.0.1',
-)
-print('signin', res.status_code, res.content.decode('utf-8'))
-if res.status_code != 200:
-    sys.exit(1)
+    def test_signin_and_cart_flow(self):
+        client = Client()
+        response = client.post(
+            '/api/auth/signin/',
+            data=json.dumps({'email': 'test@example.com', 'password': 'password123'}),
+            content_type='application/json',
+            HTTP_HOST='127.0.0.1',
+        )
+        self.assertEqual(response.status_code, 200, response.content.decode('utf-8'))
 
-token = res.json().get('token')
-print('token', token)
+        token = response.json().get('token')
+        self.assertTrue(token)
 
-client.defaults['HTTP_AUTHORIZATION'] = f'Token {token}'
-res2 = client.post(
-    '/api/cart/add/',
-    data=json.dumps({'product_id': product.id}),
-    content_type='application/json',
-    HTTP_HOST='127.0.0.1',
-)
-print('add_to_cart', res2.status_code, res2.content.decode('utf-8'))
-res3 = client.get('/api/cart/', HTTP_HOST='127.0.0.1')
-print('get_cart', res3.status_code, res3.content.decode('utf-8'))
+        client.defaults['HTTP_AUTHORIZATION'] = f'Token {token}'
+        add_response = client.post(
+            '/api/cart/add/',
+            data=json.dumps({'product_id': self.product.id}),
+            content_type='application/json',
+            HTTP_HOST='127.0.0.1',
+        )
+        self.assertEqual(add_response.status_code, 200, add_response.content.decode('utf-8'))
+
+        cart_response = client.get('/api/cart/', HTTP_HOST='127.0.0.1')
+        self.assertEqual(cart_response.status_code, 200, cart_response.content.decode('utf-8'))
+        self.assertGreaterEqual(len(cart_response.json().get('items', [])), 1)

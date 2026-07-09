@@ -17,11 +17,18 @@ From the project root (`Ecommerce-`):
 ```bash
 make up
 ```
-## use another git bas to copy the catelog 
+## Load the product catalog fixture
+The fixture file is already in the backend folder and is mounted into the container at /app/catalog.json, so you can load it directly:
+
 ```bash
-docker compose cp catalog.json backend:/app/catalog.json
 docker compose exec -T backend python manage.py loaddata /app/catalog.json
 docker compose exec -T backend python manage.py shell -c "from store.models import Product, Category; print('products=', Product.objects.count(), 'categories=', Category.objects.count())"
+```
+
+If you ever need to copy it manually from the host, use:
+
+```bash
+docker compose cp backend/catalog.json backend:/app/catalog.json
 ```
 ## Open App
 - Frontend: `http://localhost:5173`
