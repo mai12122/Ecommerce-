@@ -113,6 +113,33 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const signInWithGoogle = async (credentialResponse) => {
+        try {
+            const idToken = credentialResponse?.credential || credentialResponse?.id_token;
+            const res = await fetch(`${BASEURL}/api/auth/google/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id_token: idToken }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                if (data.avatar && !data.avatar.startsWith('http')) {
+                    data.avatar = `${BASEURL}${data.avatar}`;
+                }
+                if (data.token) {
+                    localStorage.setItem('auth_token', data.token);
+                    setToken(data.token);
+                }
+                setUser(data);
+                localStorage.setItem("auth_user", JSON.stringify(data));
+                return { success: true };
+            }
+            return { success: false, error: data.error || "Google sign-in failed" };
+        } catch {
+            return { success: false, error: "Network error. Please try again." };
+        }
+    };
+
     const signUp = async (name, email, phone, password) => {
         try {
             const res = await fetch(`${BASEURL}/api/auth/signup/`, {
@@ -164,7 +191,8 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{ 
             user, 
             token,
-            signIn, 
+            signIn,
+            signInWithGoogle,
             signUp, 
             signOut, 
             updateProfile,  

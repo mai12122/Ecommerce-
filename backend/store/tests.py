@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.test import TestCase
+from unittest.mock import patch
 from .models import Category, Product, Cart, CartItem
 
 class StoreAPITestCase(TestCase):
@@ -48,3 +49,22 @@ class StoreAPITestCase(TestCase):
         cart_response = self.client.get(reverse('get_cart'))
         self.assertEqual(cart_response.status_code, status.HTTP_200_OK)
         self.assertEqual(cart_response.data['items'][0]['product'], self.product.id)
+
+    @patch('store.views.requests.get')
+    def test_google_oauth_signin_creates_user_and_returns_token(self, mock_get):
+        mock_get.return_value.json.return_value = {
+            'sub': 'google-user-1',
+            'email': 'google@example.com',
+            'name': 'Google User',
+            'picture': 'https://example.com/avatar.png',
+        }
+        mock_get.return_value.raise_for_status.return_value = None
+
+        response = self.client.post(reverse('google_oauth'), {
+            'id_token': 'fake-token'
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['email'], 'google@example.com')
+        self.assertIn('token', response.data)
+        self.assertTrue(User.objects.filter(email='google@example.com').exists())

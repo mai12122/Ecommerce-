@@ -49,6 +49,7 @@ PySocks==1.7.1
 python-dotenv==1.2.2
 
 requests==2.33.0
+google-auth==2.36.0
 
 selenium==4.41.0
 

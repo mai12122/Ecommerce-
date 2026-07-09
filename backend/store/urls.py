@@ -14,5 +14,6 @@ urlpatterns = [
     path('orders/', views.get_orders, name='get_orders'),
     path('auth/signup/', views.signup, name='signup'),
     path('auth/signin/', views.signin, name='signin'),
+    path('auth/google/', views.google_oauth, name='google_oauth'),
     path('auth/profile/', views.update_profile, name='update_profile'),
 ]

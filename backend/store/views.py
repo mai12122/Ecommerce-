@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 import logging
+import requests
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Product, Category, Cart, CartItem, Order, OrderItem, UserProfile
@@ -210,6 +211,34 @@ def signup(request):
 signup.throttle_scope = 'login'
 
 
+def _build_auth_response(user, profile=None):
+    if profile is None:
+        try:
+            profile = user.userprofile
+        except UserProfile.DoesNotExist:
+            profile = None
+
+    phone = ''
+    address = ''
+    avatar_url = ''
+    if profile is not None:
+        phone = profile.phone_number
+        address = profile.address
+        avatar_url = get_avatar_url(profile)
+
+    token, _ = Token.objects.get_or_create(user=user)
+
+    return Response({
+        'id': user.id,
+        'name': user.get_full_name(),
+        'email': user.email,
+        'phone': phone,
+        'address': address,
+        'avatar': avatar_url,
+        'token': token.key,
+    })
+
+
 @api_view(['POST'])
 @csrf_exempt
 @permission_classes([AllowAny])
@@ -231,31 +260,55 @@ def signin(request):
 
     logger = logging.getLogger(__name__)
     logger.info('User signed in and token created', extra={'user_id': user.id, 'email': user.email})
+    return _build_auth_response(user)
 
-    phone = ''
-    avatar_url = ''
-    address = ''
-    phone = ''
-    avatar_url = ''
+
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([AllowAny])
+def google_oauth(request):
+    token_id = request.data.get('id_token') or request.data.get('credential')
+    if not token_id:
+        return Response({'error': 'Google token is required'}, status=400)
+
     try:
-        profile = user.userprofile
-        phone = profile.phone_number
-        address = profile.address
-        avatar_url = get_avatar_url(profile)
-    except UserProfile.DoesNotExist:
-        profile = None
+        response = requests.get(
+            'https://oauth2.googleapis.com/tokeninfo',
+            params={'id_token': token_id},
+            timeout=5,
+        )
+        response.raise_for_status()
+        payload = response.json()
+    except requests.RequestException:
+        return Response({'error': 'Unable to verify Google token'}, status=400)
 
-    token, _ = Token.objects.get_or_create(user=user)
+    email = (payload.get('email') or '').strip().lower()
+    if not email:
+        return Response({'error': 'Google account email is required'}, status=400)
 
-    return Response({
-        'id': user.id,
-        'name': user.get_full_name(),
-        'email': user.email,
-        'phone': phone,
-        'address': address,
-        'avatar': avatar_url,
-        'token': token.key,
-    })
+    user, created = User.objects.get_or_create(
+        username=email,
+        defaults={
+            'email': email,
+            'first_name': (payload.get('name') or email.split('@', 1)[0]).split(' ', 1)[0],
+            'last_name': (payload.get('name') or email.split('@', 1)[0]).split(' ', 1)[1] if ' ' in (payload.get('name') or email.split('@', 1)[0]) else '',
+        },
+    )
+    if created:
+        user.set_unusable_password()
+        user.save()
+
+    if not hasattr(user, 'userprofile'):
+        UserProfile.objects.get_or_create(user=user)
+
+    profile = user.userprofile
+    if payload.get('name') and not user.get_full_name().strip():
+        first_name, _, last_name = payload.get('name').partition(' ')
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+
+    return _build_auth_response(user, profile)
 
 
 signin.throttle_scope = 'login'
