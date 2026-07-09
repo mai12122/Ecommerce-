@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -23,12 +23,12 @@ function ProductList() {
   const [error, setError] = useState(null);
   const [showSigninMessage, setShowSigninMessage] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [hasShownModal, setHasShownModal] = useState(false);
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const { cartItems } = useCart();
   const { user } = useAuth();
+  const prevUserRef = useRef(undefined);
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
@@ -40,6 +40,27 @@ function ProductList() {
     }
     return undefined;
   }, [location.state]);
+
+  // If the user was just redirected after signing in, open the promo modal.
+  useEffect(() => {
+    if (showSigninMessage && categories.length > 0) {
+      setIsModalOpen(true);
+    }
+  }, [showSigninMessage, categories.length]);
+
+  // Fallback: if sign-in redirect state was lost (page reload), use a persistent flag
+  useEffect(() => {
+    try {
+      const flag = localStorage.getItem('show_modal_after_signin');
+      if (flag === '1' && categories.length > 0) {
+        setIsModalOpen(true);
+        localStorage.removeItem('show_modal_after_signin');
+        setShowSigninMessage(true);
+      }
+    } catch (e) {
+      // ignore storage errors
+    }
+  }, [categories.length]);
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get("category");
@@ -76,13 +97,24 @@ function ProductList() {
     loadInitialData();
   }, [BASEURL]);
 
-  // Auto-open modal when user is authenticated and categories are loaded
+  // Open the modal only when the user transitions from logged out to logged in.
   useEffect(() => {
-    if (user && categories.length > 0 && !hasShownModal && selectedCategory === "All") {
-      setIsModalOpen(true);
-      setHasShownModal(true);
+    if (prevUserRef.current === undefined) {
+      prevUserRef.current = user;
+      return;
     }
-  }, [user, categories, hasShownModal]);
+
+    const wasAuthenticated = !!prevUserRef.current;
+    const isAuthenticated = !!user;
+
+    if (!wasAuthenticated && isAuthenticated && categories.length > 0) {
+      setIsModalOpen(true);
+    } else if (wasAuthenticated && !isAuthenticated) {
+      setIsModalOpen(false);
+    }
+
+    prevUserRef.current = user;
+  }, [user, categories.length]);
 
   const isProductVisible = (product) => {
     const matchesCategory = selectedCategory === "All" || product.category?.name === selectedCategory;

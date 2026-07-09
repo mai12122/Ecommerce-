@@ -173,7 +173,7 @@ const PromoCodeInput = () => (
         placeholder="Promo code"
         className="flex-1 bg-[#0f172a] border border-[#334155] rounded-xl px-4 py-3.5 text-sm text-white placeholder-[#64748b] outline-none focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
       />
-      <button className="bg-[#2B3D5F] text-white px-5 py-3.5 rounded-xl text-sm font-semibold hover:bg-[#2B3D5F]/90 transition-colors">
+      <button className="bg-primary text-white px-5 py-3.5 rounded-xl text-sm font-semibold hover:bg-[#2B3D5F]/90 transition-colors">
         Apply
       </button>
     </div>

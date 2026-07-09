@@ -117,8 +117,8 @@ function CheckoutPage() {
             </span>
           </div>
         )}
-        <div className="flex items-center gap-3 bg-[#19233C] rounded-xl p-4 mb-6 border border-[#2B3D5F]">
-          <div className="w-10 h-10 bg-[#2B3D5F] rounded-full flex items-center justify-center">
+        <div className="flex items-center gap-3 bg-[#19233C] rounded-xl p-4 mb-6 border border-primary">
+          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 text-[#4E6793]"
@@ -152,7 +152,7 @@ function CheckoutPage() {
               value={form.name}
               onChange={handleChange}
               placeholder="Full Name"
-              className="w-full bg-[#19233C] border border-[#2B3D5F] rounded-xl px-4 py-3.5 text-[#E5E7EB] placeholder-[#4E6793] outline-none focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+              className="w-full bg-[#19233C] border border-primary rounded-xl px-4 py-3.5 text-[#E5E7EB] placeholder-[#4E6793] outline-none focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
               required
             />
           </div>
@@ -165,7 +165,7 @@ function CheckoutPage() {
               value={form.phone}
               onChange={handleChange}
               placeholder="+1 000 000 0000"
-              className="w-full bg-[#19233C] border border-[#2B3D5F] rounded-xl px-4 py-3.5 text-[#E5E7EB] placeholder-[#4E6793] outline-none focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+              className="w-full bg-[#19233C] border border-primary rounded-xl px-4 py-3.5 text-[#E5E7EB] placeholder-[#4E6793] outline-none focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
               required
             />
           </div>
@@ -197,8 +197,8 @@ function CheckoutPage() {
       </div>
       {showSuccess && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-5">
-          <div className="bg-[#19233C] rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl border border-[#2B3D5F]">
-            <div className="w-20 h-20 bg-[#2B3D5F] rounded-full flex items-center justify-center mx-auto mb-5">
+          <div className="bg-[#19233C] rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl border border-primary">
+            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-10 w-10 text-[#4E6793]"

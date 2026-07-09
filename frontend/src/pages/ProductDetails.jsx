@@ -78,7 +78,7 @@ function ProductDetail() {
           onClick={() => navigate(-1)}
           className="absolute top-5 left-5 bg-white rounded-full p-3 shadow-md border border-[#E5E7EB] hover:bg-[#F8FAFC] transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#2B3D5F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -92,7 +92,7 @@ function ProductDetail() {
         >
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
-            className={`h-5 w-5 ${isWishlisted(product.id) ? 'text-white fill-white' : 'text-[#2B3D5F]'}`} 
+            className={`h-5 w-5 ${isWishlisted(product.id) ? 'text-white fill-white' : 'text-primary'}`} 
             fill={isWishlisted(product.id) ? 'currentColor' : 'none'} 
             viewBox="0 0 24 24" 
             stroke="currentColor" 
@@ -124,19 +124,19 @@ function ProductDetail() {
               </svg>
             ))}
           </div>
-          <span className="text-sm text-[#2B3D5F]">4.5 (20 Reviews)</span>
+          <span className="text-sm text-primary">4.5 (20 Reviews)</span>
         </div>
         <div className="h-px bg-[#E5E7EB] mb-6" />
         <div className="mb-6">
           <h2 className="text-xs font-semibold text-[#4E6793] mb-3 uppercase tracking-wider">Description</h2>
-          <p className="text-sm text-[#2B3D5F] leading-relaxed">
+          <p className="text-sm text-primary leading-relaxed">
             {product.description || "No description available for this product."}
           </p>
         </div>
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-semibold text-[#4E6793] uppercase tracking-wider">Size</h2>
-            <button className="text-xs text-[#4E6793] underline hover:text-[#2B3D5F] transition-colors">
+            <button className="text-xs text-[#4E6793] underline hover:text-primary transition-colors">
               Size Guide
             </button>
           </div>
@@ -148,7 +148,7 @@ function ProductDetail() {
                 className={`min-w-12 h-12 rounded-xl border text-sm font-medium flex items-center justify-center transition-all ${
                   selectedSize === size
                     ? 'bg-[#4E6793] border-[#4E6793] text-white shadow-lg shadow-[#4E6793]/25'
-                    : 'bg-white border-[#E5E7EB] text-[#2B3D5F] hover:border-[#4E6793] hover:text-[#4E6793]'
+                    : 'bg-white border-[#E5E7EB] text-primary hover:border-[#4E6793] hover:text-[#4E6793]'
                 }`}
               >
                 {size}
@@ -170,7 +170,7 @@ function ProductDetail() {
             className="w-14 h-14 bg-[#F8FAFC] rounded-xl flex items-center justify-center shrink-0 border border-[#E5E7EB] hover:border-[#4E6793] hover:bg-[#F1F5F9] transition-colors"
             onClick={() => addToCart(product.id)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#2B3D5F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </button>

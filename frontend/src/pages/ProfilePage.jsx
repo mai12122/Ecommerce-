@@ -10,13 +10,15 @@ function ProfilePage() {
     const { wishlistItems } = useCart();
     
     const [previewUrl, setPreviewUrl] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editedProfile, setEditedProfile] = useState({
         name: "",
         email: "",
-        phone: ""
+        phone: "",
+        address: ""
     });
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState(null);
@@ -26,7 +28,8 @@ function ProfilePage() {
             setEditedProfile({
                 name: user.name || "",
                 email: user.email || "",
-                phone: user.phone || ""
+                phone: user.phone || "",
+                address: user.address || ""
             });
         }
     }, [user]);
@@ -49,22 +52,17 @@ function ProfilePage() {
             return;
         }
 
+        // store file for upload and create object url for preview
         setIsUploading(true);
-        const reader = new FileReader();
-        
-        reader.onloadend = () => {
-            const base64Image = reader.result;
-            setPreviewUrl(base64Image);
-            setEditedProfile(prev => ({ ...prev, avatar: base64Image }));
-            setIsUploading(false);
-        };
-        
-        reader.onerror = () => {
-            alert("Failed to read image. Please try again.");
-            setIsUploading(false);
-        };
-        
-        reader.readAsDataURL(file);
+        setSelectedFile(file);
+        try {
+            const objectUrl = URL.createObjectURL(file);
+            setPreviewUrl(objectUrl);
+        } catch (e) {
+            console.error('preview error', e);
+            setPreviewUrl(null);
+        }
+        setIsUploading(false);
         event.target.value = "";
     };
 
@@ -89,6 +87,7 @@ function ProfilePage() {
             editedProfile.name !== (user.name || "") ||
             editedProfile.email !== (user.email || "") ||
             editedProfile.phone !== (user.phone || "") ||
+            editedProfile.address !== (user.address || "") ||
             editedProfile.avatar !== user.avatar ||
             previewUrl !== null
         );
@@ -111,11 +110,18 @@ function ProfilePage() {
                 name: editedProfile.name.trim(),
                 email: editedProfile.email.trim(),
                 phone: editedProfile.phone.trim(),
-                ...(previewUrl && { avatar: previewUrl })
+                address: editedProfile.address.trim(),
+                // send the selected File if present so backend can accept multipart upload
+                ...(selectedFile ? { avatar: selectedFile } : (previewUrl ? { avatar: previewUrl } : {}))
             };
             const result = await updateProfile(dataToSave);
             if (result.success) {
+                // revoke object URL if we used one
+                if (previewUrl && selectedFile) {
+                    try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+                }
                 setPreviewUrl(null);
+                setSelectedFile(null);
                 setSaveMessage({ type: "success", text: "Profile saved successfully! ✓" });
                 setIsEditing(false);
                 setTimeout(() => setSaveMessage(null), 3000);
@@ -136,7 +142,8 @@ function ProfilePage() {
             setEditedProfile({
                 name: user.name || "",
                 email: user.email || "",
-                phone: user.phone || ""
+                phone: user.phone || "",
+                address: user.address || ""
             });
         }
         setPreviewUrl(null);
@@ -313,6 +320,22 @@ function ProfilePage() {
                                 />
                             ) : (
                                 <p className="text-gray-600 text-sm">{user?.phone || ""}</p>
+                            )}
+                        </div>
+
+                        {/* Address */}
+                        <div>
+                            <label className="block text-xs text-gray-500 mb-1">Address</label>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    value={editedProfile.address}
+                                    onChange={(e) => handleInputChange("address", e.target.value)}
+                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
+                                    placeholder="Your address"
+                                />
+                            ) : (
+                                <p className="text-gray-600 text-sm">{user?.address || ""}</p>
                             )}
                         </div>
                     </div>

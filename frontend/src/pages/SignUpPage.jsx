@@ -74,7 +74,7 @@ function SignUpPage() {
 
             {/* Card */}
             <div className="w-full max-w-md">
-                <div className="bg-[#19233C] rounded-2xl p-8 border border-[#2B3D5F] shadow-xl">
+                <div className="bg-[#19233C] rounded-2xl p-8 border border-primary shadow-xl">
                     <h2 className="text-lg font-semibold text-[#E5E7EB] text-center mb-6">Join GenZ Today</h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -93,7 +93,7 @@ function SignUpPage() {
                                     value={form.name}
                                     onChange={handleChange}
                                     placeholder="Your Name"
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-4 outline-none border border-[#2B3D5F] focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+                                    className="w-full bg-primary text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-4 outline-none border border-primary focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
                                     required
                                 />
                             </div>
@@ -114,7 +114,7 @@ function SignUpPage() {
                                     value={form.email}
                                     onChange={handleChange}
                                     placeholder="you@example.com"
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-4 outline-none border border-[#2B3D5F] focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+                                    className="w-full bg-primary text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-4 outline-none border border-primary focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
                                     required
                                 />
                             </div>
@@ -155,7 +155,7 @@ function SignUpPage() {
                                     value={form.password}
                                     onChange={handleChange}
                                     placeholder="Create a password"
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-12 outline-none border border-[#2B3D5F] focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+                                    className="w-full bg-primary text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-12 outline-none border border-primary focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
                                     required
                                 />
                                 <EyeIcon show={showPassword} onToggle={() => setShowPassword(!showPassword)} />
@@ -177,7 +177,7 @@ function SignUpPage() {
                                     value={form.confirmPassword}
                                     onChange={handleChange}
                                     placeholder="Confirm your password"
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-12 outline-none border border-[#2B3D5F] focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+                                    className="w-full bg-primary text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-12 outline-none border border-primary focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
                                     required
                                 />
                                 <EyeIcon show={showConfirm} onToggle={() => setShowConfirm(!showConfirm)} />

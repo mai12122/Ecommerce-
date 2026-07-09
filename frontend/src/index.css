@@ -7,3 +7,18 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+:root {
+  --primary: #2B3D5F;
+  --primary-variant: #19233C;
+  --accent: #4E6793;
+}
+
+/* Utility helpers for primary color */
+.border-primary { border-color: var(--primary) !important; }
+.bg-primary { background-color: var(--primary) !important; }
+.text-primary { color: var(--primary) !important; }
+.bg-primary-variant { background-color: var(--primary-variant) !important; }
+
+/* Small helpers used by forms */
+.placeholder-primary ::placeholder { color: var(--primary); }

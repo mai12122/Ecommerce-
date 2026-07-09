@@ -201,6 +201,7 @@ def signup(request):
         'name': user.get_full_name(),
         'email': user.email,
         'phone': profile.phone_number,
+        'address': profile.address,
         'avatar': get_avatar_url(profile),
         'token': token.key,
     }, status=201)
@@ -233,11 +234,16 @@ def signin(request):
 
     phone = ''
     avatar_url = ''
+    address = ''
+    phone = ''
+    avatar_url = ''
     try:
-        phone = user.userprofile.phone_number
-        avatar_url = get_avatar_url(user.userprofile)
+        profile = user.userprofile
+        phone = profile.phone_number
+        address = profile.address
+        avatar_url = get_avatar_url(profile)
     except UserProfile.DoesNotExist:
-        pass
+        profile = None
 
     token, _ = Token.objects.get_or_create(user=user)
 
@@ -246,6 +252,7 @@ def signin(request):
         'name': user.get_full_name(),
         'email': user.email,
         'phone': phone,
+        'address': address,
         'avatar': avatar_url,
         'token': token.key,
     })
@@ -271,6 +278,7 @@ def update_profile(request):
     name = data.get('name', '').strip()
     email = data.get('email', '').strip()
     phone = data.get('phone', '').strip()
+    address = data.get('address', '').strip()
 
     if name:
         name_parts = name.split(' ', 1)
@@ -287,6 +295,7 @@ def update_profile(request):
 
     profile, _ = UserProfile.objects.get_or_create(user=user)
     profile.phone_number = phone
+    profile.address = address
     profile.save()
 
     avatar_data = data.get('avatar', '')
@@ -298,5 +307,6 @@ def update_profile(request):
         'name': user.get_full_name(),
         'email': user.email,
         'phone': phone,
+        'address': profile.address,
         'avatar': get_avatar_url(profile),
     })

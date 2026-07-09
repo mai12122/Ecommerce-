@@ -19,7 +19,9 @@ function SignInPage() {
         const result = await signIn(email, password);
         setLoading(false);
         if (result.success) {
-            navigate("/", { state: { showSigninSuccess: true } });
+                // set a persistent flag so ProductList can open the promo modal after redirect
+                try { localStorage.setItem('show_modal_after_signin', '1'); } catch {}
+                navigate("/", { state: { showSigninSuccess: true } });
         } else {
             setError(result.error);
         }
@@ -35,7 +37,7 @@ function SignInPage() {
             </div>
 
             <div className="w-full max-w-md">
-                <div className="bg-[#19233C] rounded-2xl p-8 border border-[#2B3D5F] shadow-xl">
+                <div className="bg-[#19233C] rounded-2xl p-8 border border-primary shadow-xl">
                     <h2 className="text-lg font-semibold text-[#E5E7EB] text-center mb-6">Sign In to Your Account</h2>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
@@ -53,7 +55,7 @@ function SignInPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="you@example.com"
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-4 outline-none border border-[#2B3D5F] focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+                                    className="w-full bg-primary text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-4 outline-none border border-primary focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
                                     required
                                 />
                             </div>
@@ -72,7 +74,7 @@ function SignInPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter your password"
-                                    className="w-full bg-[#2B3D5F] text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-12 outline-none border border-[#2B3D5F] focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
+                                    className="w-full bg-primary text-[#E5E7EB] placeholder-[#4E6793] rounded-xl py-3 pl-11 pr-12 outline-none border border-primary focus:border-[#4E6793] focus:ring-1 focus:ring-[#4E6793] transition-all"
                                     required
                                 />
                                 <button
@@ -110,11 +112,11 @@ function SignInPage() {
                     </form>
 
                     <div className="flex items-center gap-4 my-6">
-                        <div className="flex-1 h-px bg-[#2B3D5F]" />
+                        <div className="flex-1 h-px bg-primary" />
                         <span className="text-[#4E6793] text-sm">Or continue with</span>
                         <div className="flex-1 h-px bg-[#2B3D5F]" />
                     </div>
-                    <button className="w-full bg-[#2B3D5F] text-[#E5E7EB] py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-3 hover:bg-[#2B3D5F]/80 transition-colors border border-[#2B3D5F]">
+                    <button className="w-full bg-primary text-[#E5E7EB] py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-3 hover:bg-[#2B3D5F]/80 transition-colors border border-primary">
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
