@@ -3,6 +3,20 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import GenZLogo from "../assets/GenZlogo.png";
 
+function EyeIcon({ show, onToggle }) {
+    return (
+        <button type="button" onClick={onToggle} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4E6793] hover:text-[#E5E7EB] transition-colors" aria-label={show ? "Hide password" : "Show password"}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                {show ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.99 7.99m3.889 1.888L14.12 14.12m0 0l2.829 2.829M3 3l18 18" />
+                )}
+            </svg>
+        </button>
+    );
+}
+
 function SignUpPage() {
     const navigate = useNavigate();
     const { signUp } = useAuth();
@@ -50,18 +64,6 @@ function SignUpPage() {
         }
     };
 
-    const EyeIcon = ({ show, onToggle }) => (
-        <button type="button" onClick={onToggle} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4E6793] hover:text-[#E5E7EB] transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                {show ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.99 7.99m3.889 1.888L14.12 14.12m0 0l2.829 2.829M3 3l18 18" />
-                )}
-            </svg>
-        </button>
-    );
-
     return (
         <div className="min-h-screen bg-[#0F1420] flex flex-col items-center justify-center px-4 py-8">
             {/* Logo & Header */}
@@ -80,7 +82,7 @@ function SignUpPage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Full Name */}
                         <div>
-                            <label className="text-sm text-[#4E6793] mb-2 block font-medium">Full Name</label>
+                            <label htmlFor="name" className="text-sm text-[#4E6793] mb-2 block font-medium">Full Name</label>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E6793]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -88,6 +90,7 @@ function SignUpPage() {
                                     </svg>
                                 </span>
                                 <input
+                                    id="name"
                                     type="text"
                                     name="name"
                                     value={form.name}
@@ -101,7 +104,7 @@ function SignUpPage() {
 
                         {/* Email */}
                         <div>
-                            <label className="text-sm text-[#4E6793] mb-2 block font-medium">Email Address</label>
+                            <label htmlFor="email" className="text-sm text-[#4E6793] mb-2 block font-medium">Email Address</label>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E6793]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -109,6 +112,7 @@ function SignUpPage() {
                                     </svg>
                                 </span>
                                 <input
+                                    id="email"
                                     type="email"
                                     name="email"
                                     value={form.email}
@@ -122,7 +126,7 @@ function SignUpPage() {
 
                         {/* Phone */}
                         <div>
-                            <label className="text-sm text-[#4E6793] mb-2 block font-medium">Phone Number</label>
+                            <label htmlFor="phone" className="text-sm text-[#4E6793] mb-2 block font-medium">Phone Number</label>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E6793]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -130,6 +134,7 @@ function SignUpPage() {
                                     </svg>
                                 </span>
                                 <input
+                                    id="phone"
                                     type="tel"
                                     name="phone"
                                     value={form.phone}
@@ -142,7 +147,7 @@ function SignUpPage() {
 
                         {/* Password */}
                         <div>
-                            <label className="text-sm text-[#4E6793] mb-2 block font-medium">Password</label>
+                            <label htmlFor="password" className="text-sm text-[#4E6793] mb-2 block font-medium">Password</label>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E6793]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -150,6 +155,7 @@ function SignUpPage() {
                                     </svg>
                                 </span>
                                 <input
+                                    id="password"
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={form.password}
@@ -164,7 +170,7 @@ function SignUpPage() {
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="text-sm text-[#4E6793] mb-2 block font-medium">Confirm Password</label>
+                            <label htmlFor="confirmPassword" className="text-sm text-[#4E6793] mb-2 block font-medium">Confirm Password</label>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E6793]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -172,6 +178,7 @@ function SignUpPage() {
                                     </svg>
                                 </span>
                                 <input
+                                    id="confirmPassword"
                                     type={showConfirm ? "text" : "password"}
                                     name="confirmPassword"
                                     value={form.confirmPassword}

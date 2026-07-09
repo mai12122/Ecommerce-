@@ -14,34 +14,47 @@ function SignInPage() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+        if (!clientId) return;
+
+        const initializeButton = () => {
+            if (!window.google?.accounts?.id || !googleButtonRef.current) return;
+            window.google.accounts.id.initialize({
+                client_id: clientId,
+                callback: async (response) => {
+                    const result = await signInWithGoogle(response);
+                    if (result.success) {
+                        try { localStorage.setItem('show_modal_after_signin', '1'); } catch (storageError) { console.warn('Unable to persist signin flag', storageError); }
+                        navigate("/", { state: { showSigninSuccess: true } });
+                    } else {
+                        console.warn('Google sign-in failed', result.error);
+                    }
+                },
+            });
+            window.google.accounts.id.renderButton(googleButtonRef.current, {
+                theme: 'outline',
+                size: 'large',
+                width: '100%',
+            });
+        };
+
         const existingScript = document.getElementById("google-identity-script");
-        if (existingScript || window.google?.accounts?.id) return;
+        if (window.google?.accounts?.id) {
+            initializeButton();
+            return;
+        }
+        if (existingScript) {
+            return;
+        }
 
         const script = document.createElement("script");
         script.id = "google-identity-script";
         script.src = "https://accounts.google.com/gsi/client";
         script.async = true;
         script.defer = true;
-        script.onload = () => {
-            const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-            if (!clientId) return;
-            try {
-                window.google.accounts.id.initialize({
-                    client_id: clientId,
-                    callback: async (response) => {
-                        await signInWithGoogle(response);
-                    },
-                });
-                if (googleButtonRef.current) {
-                    window.google.accounts.id.renderButton(googleButtonRef.current, { theme: 'outline', size: 'large' });
-                }
-            } catch (e) {
-                // ignore initialization errors; fallback handled on click
-                console.warn('Google SDK initialize error', e);
-            }
-        };
+        script.onload = initializeButton;
         document.body.appendChild(script);
-    }, []);
+    }, [navigate, signInWithGoogle]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -51,49 +64,11 @@ function SignInPage() {
         setLoading(false);
         if (result.success) {
                 // set a persistent flag so ProductList can open the promo modal after redirect
-                try { localStorage.setItem('show_modal_after_signin', '1'); } catch {}
+                try { localStorage.setItem('show_modal_after_signin', '1'); } catch (storageError) { console.warn('Unable to persist signin flag', storageError); }
                 navigate("/", { state: { showSigninSuccess: true } });
         } else {
             setError(result.error);
         }
-    };
-
-    const handleGoogleContinue = () => {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-        if (!clientId) {
-            setError("Google sign-in is not configured yet. Add VITE_GOOGLE_CLIENT_ID to your frontend env file.");
-            return;
-        }
-
-        if (!window.google?.accounts?.id) {
-            setError("Google sign-in is not available right now.");
-            return;
-        }
-
-        setError("");
-        setLoading(true);
-        window.google.accounts.id.initialize({
-            client_id: clientId,
-            callback: async (response) => {
-                const result = await signInWithGoogle(response);
-                setLoading(false);
-                if (result.success) {
-                    try { localStorage.setItem('show_modal_after_signin', '1'); } catch {}
-                    navigate("/", { state: { showSigninSuccess: true } });
-                } else {
-                    setError(result.error);
-                }
-            },
-            auto_select: false,
-            cancel_on_tap_outside: true,
-        });
-
-        window.google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                setLoading(false);
-                setError("Google sign-in popup was blocked or unavailable.");
-            }
-        });
     };
 
     return (
@@ -112,7 +87,7 @@ function SignInPage() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                        
                         <div>
-                            <label className="text-sm text-[#4E6793] mb-2 block font-medium">Email Address</label>
+                            <label htmlFor="email" className="text-sm text-[#4E6793] mb-2 block font-medium">Email Address</label>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E6793]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -120,6 +95,7 @@ function SignInPage() {
                                     </svg>
                                 </span>
                                 <input
+                                    id="email"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -131,7 +107,7 @@ function SignInPage() {
                         </div>
 
                         <div>
-                            <label className="text-sm text-[#4E6793] mb-2 block font-medium">Password</label>
+                            <label htmlFor="password" className="text-sm text-[#4E6793] mb-2 block font-medium">Password</label>
                             <div className="relative">
                                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4E6793]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -139,6 +115,7 @@ function SignInPage() {
                                     </svg>
                                 </span>
                                 <input
+                                    id="password"
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -185,22 +162,7 @@ function SignInPage() {
                         <span className="text-[#4E6793] text-sm">Or continue with</span>
                         <div className="flex-1 h-px bg-[#2B3D5F]" />
                     </div>
-                    <button
-                        type="button"
-                        onClick={handleGoogleContinue}
-                        disabled={loading}
-                        className="w-full bg-primary text-[#E5E7EB] py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-3 hover:bg-[#2B3D5F]/80 transition-colors border border-primary disabled:opacity-50"
-                    >
-                        <svg className="h-5 w-5" viewBox="0 0 24 24">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        Continue with Google
-                    </button>
-                    {/* Container for Google's rendered button (SDK will populate this) */}
-                    <div ref={googleButtonRef} className="mt-3 flex justify-center" />
+                    <div ref={googleButtonRef} className="mt-3" />
                 </div>
 
                 <div className="text-center mt-6">

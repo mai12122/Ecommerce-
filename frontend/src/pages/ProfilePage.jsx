@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
@@ -38,6 +37,7 @@ function ProfilePage() {
         signOut();
         navigate("/signin");
     };
+
     const handleImageSelect = (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -52,7 +52,6 @@ function ProfilePage() {
             return;
         }
 
-        // store file for upload and create object url for preview
         setIsUploading(true);
         setSelectedFile(file);
         try {
@@ -81,6 +80,7 @@ function ProfilePage() {
         setEditedProfile(prev => ({ ...prev, [field]: value }));
         setSaveMessage(null); 
     };
+
     const hasUnsavedChanges = () => {
         if (!user) return false;
         return (
@@ -92,6 +92,7 @@ function ProfilePage() {
             previewUrl !== null
         );
     };
+
     const handleSave = async () => {
         if (!editedProfile.name.trim()) {
             alert("Name is required.");
@@ -111,14 +112,12 @@ function ProfilePage() {
                 email: editedProfile.email.trim(),
                 phone: editedProfile.phone.trim(),
                 address: editedProfile.address.trim(),
-                // send the selected File if present so backend can accept multipart upload
                 ...(selectedFile ? { avatar: selectedFile } : (previewUrl ? { avatar: previewUrl } : {}))
             };
             const result = await updateProfile(dataToSave);
             if (result.success) {
-                // revoke object URL if we used one
                 if (previewUrl && selectedFile) {
-                    try { URL.revokeObjectURL(previewUrl); } catch (e) {}
+                    try { URL.revokeObjectURL(previewUrl); } catch (err) { console.warn('Failed to revoke preview URL', err); }
                 }
                 setPreviewUrl(null);
                 setSelectedFile(null);
@@ -128,7 +127,6 @@ function ProfilePage() {
             } else {
                 setSaveMessage({ type: "error", text: result.error || "Failed to save. Please try again." });
             }
-            
         } catch (error) {
             console.error("Save failed:", error);
             setSaveMessage({ type: "error", text: "Failed to save. Please try again." });
@@ -153,16 +151,16 @@ function ProfilePage() {
 
     const menuItems = [
         { label: "Order History", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01", path: "/orders" },
-        { label: "Address", icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" },
-        { label: "Bill", icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
-        { label: "Language", icon: "M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" },
-        { label: "Preferred exchange rate", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" },
-        { label: "Feedback", icon: "M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" },
-        { label: "Conversion", icon: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" },
+        { label: "Address", icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z", path: "/address" },
+        { label: "Bill", icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", path: "/bill" },
+        { label: "Language", icon: "M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129", path: "/language" },
+        { label: "Preferred exchange rate", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", path: "/exchange-rate" },
+        { label: "Feedback", icon: "M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z", path: "/feedback" },
+        { label: "Conversion", icon: "M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4", path: "/conversion" },
     ];
 
     return (
-        <div className="min-h-screen bg-white pb-24">
+        <div className="min-h-screen bg-gray-50 pb-24">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -171,8 +169,8 @@ function ProfilePage() {
                 className="hidden"
             />
 
-            <header className="bg-black pt-5 pb-4 px-4">
-                <div className="flex justify-between items-center">
+            <header className="bg-black pt-5 pb-4 px-4 sticky top-0 z-10 shadow-md">
+                <div className="flex justify-between items-center max-w-4xl mx-auto">
                     <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -181,7 +179,7 @@ function ProfilePage() {
                     </button>
                     <h2 className="text-white text-lg font-semibold">Profile</h2>
                     {isEditing ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <button
                                 onClick={handleCancel}
                                 disabled={isSaving}
@@ -192,7 +190,7 @@ function ProfilePage() {
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving || !hasUnsavedChanges()}
-                                className="bg-black hover:bg-gray-800 disabled:opacity-50 border border-gray-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors"
+                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors shadow-sm"
                             >
                                 {isSaving ? (
                                     <>
@@ -212,7 +210,7 @@ function ProfilePage() {
                     ) : (
                         <button
                             onClick={() => setIsEditing(true)}
-                            className="flex items-center gap-1.5 text-gray-400 hover:text-white text-sm font-medium transition-colors"
+                            className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -222,191 +220,204 @@ function ProfilePage() {
                     )}
                 </div>
             </header>
-            {saveMessage && (
-                <div className={`mx-4 mt-3 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2 ${
-                    saveMessage.type === "success" 
-                        ? "bg-green-50 text-green-800 border border-green-200" 
-                        : "bg-red-50 text-red-800 border border-red-200"
-                }`}>
-                    {saveMessage.type === "success" ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                    ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    )}
-                    {saveMessage.text}
-                </div>
-            )}
 
-            <div className="mx-4 mt-4 bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
-                <div className="flex items-start gap-4">
-                    <button 
-                        onClick={triggerFileInput}
-                        disabled={isUploading}
-                        className="relative w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-gray-400 transition-all disabled:opacity-50 "
-                    >
-                        {getAvatarDisplay() ? (
-                            <img 
-                                src={getAvatarDisplay()} 
-                                alt="Profile" 
-                                className="w-full h-full object-cover"
-                            />
+            <div className="max-w-4xl mx-auto">
+                {saveMessage && (
+                    <div className={`mx-4 mt-4 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm ${
+                        saveMessage.type === "success" 
+                            ? "bg-green-50 text-green-800 border border-green-100" 
+                            : "bg-red-50 text-red-800 border border-red-100"
+                    }`}>
+                        {saveMessage.type === "success" ? (
+                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
                         ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         )}
-                        
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        
-                        {isUploading && (
-                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-full">
-                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        {saveMessage.text}
+                    </div>
+                )}
+
+                {/* Profile Info Card */}
+                <div className="mx-4 mt-4 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <div className="flex items-center gap-5">
+                        <button 
+                            onClick={triggerFileInput}
+                            disabled={isUploading}
+                            className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white shadow-lg bg-gray-100 flex-shrink-0 group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {getAvatarDisplay() ? (
+                                <img 
+                                    src={getAvatarDisplay()} 
+                                    alt="Profile" 
+                                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                            )}
+                            
+                            {/* Camera icon badge */}
+                            <div className="absolute bottom-0 right-0 bg-white text-blue-600 rounded-full p-1.5 shadow-md border border-gray-100 flex items-center justify-center transition-all group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            
+                            {isUploading && (
+                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full backdrop-blur-sm">
+                                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                            )}
+                        </button>
+
+                        {isEditing ? (
+                            <div className="flex-1 min-w-0 space-y-3">
+                                <div>
+                                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Name</label>
+                                    <input
+                                        type="text"
+                                        value={editedProfile.name}
+                                        onChange={(e) => handleInputChange("name", e.target.value)}
+                                        className="w-full bg-gray-50 text-gray-900 px-3 py-2.5 rounded-lg text-sm border border-transparent focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all outline-none"
+                                        placeholder="Your name"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        value={editedProfile.email}
+                                        onChange={(e) => handleInputChange("email", e.target.value)}
+                                        className="w-full bg-gray-50 text-gray-900 px-3 py-2.5 rounded-lg text-sm border border-transparent focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all outline-none"
+                                        placeholder="your@email.com"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Phone</label>
+                                    <input
+                                        type="tel"
+                                        value={editedProfile.phone}
+                                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                                        className="w-full bg-gray-50 text-gray-900 px-3 py-2.5 rounded-lg text-sm border border-transparent focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all outline-none"
+                                        placeholder="+1234567890"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Address</label>
+                                    <input
+                                        type="text"
+                                        value={editedProfile.address}
+                                        onChange={(e) => handleInputChange("address", e.target.value)}
+                                        className="w-full bg-gray-50 text-gray-900 px-3 py-2.5 rounded-lg text-sm border border-transparent focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all outline-none"
+                                        placeholder="Your address"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex-1 min-w-0 ml-2">
+                                <h1 className="text-xl font-bold text-gray-900 tracking-tight truncate">{user?.name || "User"}</h1>
+                                
+                                <div className="mt-3 space-y-2">
+                                    {user?.email && (
+                                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                                            <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                            <span className="truncate">{user.email}</span>
+                                        </div>
+                                    )}
+                                    {user?.phone && (
+                                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                                            <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                            </svg>
+                                            <span className="truncate">{user.phone}</span>
+                                        </div>
+                                    )}
+                                    {user?.address && (
+                                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                                            <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <span className="truncate">{user.address}</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
-                    </button>
-
-                    <div className="flex-1 min-w-0 space-y-3">
-                        {/* Name */}
-                        <div>
-                            <label className="block text-xs text-gray-500 mb-1">Name</label>
-                            {isEditing ? (
-                                <input
-                                    type="text"
-                                    value={editedProfile.name}
-                                    onChange={(e) => handleInputChange("name", e.target.value)}
-                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
-                                    placeholder="Your name"
-                                />
-                            ) : (
-                                <p className="text-gray-900 font-medium">{user?.name || "User"}</p>
-                            )}
-                        </div>
-                        
-                        {/* Email */}
-                        <div>
-                            <label className="block text-xs text-gray-500 mb-1">Email</label>
-                            {isEditing ? (
-                                <input
-                                    type="email"
-                                    value={editedProfile.email}
-                                    onChange={(e) => handleInputChange("email", e.target.value)}
-                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
-                                    placeholder="your@email.com"
-                                />
-                            ) : (
-                                <p className="text-gray-600 text-sm">{user?.email || ""}</p>
-                            )}
-                        </div>
-                        
-                        {/* Phone */}
-                        <div>
-                            <label className="block text-xs text-gray-500 mb-1">Phone</label>
-                            {isEditing ? (
-                                <input
-                                    type="tel"
-                                    value={editedProfile.phone}
-                                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
-                                    placeholder="+1234567890"
-                                />
-                            ) : (
-                                <p className="text-gray-600 text-sm">{user?.phone || ""}</p>
-                            )}
-                        </div>
-
-                        {/* Address */}
-                        <div>
-                            <label className="block text-xs text-gray-500 mb-1">Address</label>
-                            {isEditing ? (
-                                <input
-                                    type="text"
-                                    value={editedProfile.address}
-                                    onChange={(e) => handleInputChange("address", e.target.value)}
-                                    className="w-full bg-gray-50 text-gray-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-200"
-                                    placeholder="Your address"
-                                />
-                            ) : (
-                                <p className="text-gray-600 text-sm">{user?.address || ""}</p>
-                            )}
-                        </div>
                     </div>
                 </div>
 
-                <button
-                    onClick={triggerFileInput}
-                    disabled={isUploading}
-                    className="w-full mt-4 bg-white hover:bg-gray-50 disabled:opacity-50 border border-gray-200 text-black py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm font-medium"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {isUploading ? "Processing..." : "Change Photo"}
-                </button>
-            </div>
+                {/* Quick Links Grid */}
+                <div className="mx-4 mt-4 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                    <div className="grid grid-cols-4 gap-4">
+                        {[
+                            { label: "Wishlist", icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", color: "text-red-500", bg: "bg-red-50", path: "/wishlist", badge: wishlistItems.length > 0 ? wishlistItems.length : null },
+                            { label: "Orders", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", color: "text-blue-500", bg: "bg-blue-50", path: "/orders" },
+                            { label: "Wallet", icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z", color: "text-green-500", bg: "bg-green-50", path: "/wallet" },
+                            { label: "Coupon", icon: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z", color: "text-orange-500", bg: "bg-orange-50", path: "/coupons" },
+                        ].map((item) => (
+                            <button key={item.label} onClick={() => item.path && navigate(item.path)} className="flex flex-col items-center gap-2 relative group">
+                                <div className={`w-12 h-12 ${item.bg} rounded-xl flex items-center justify-center transition-transform group-hover:scale-110`}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${item.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                                    </svg>
+                                    {item.badge && (
+                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                                            {item.badge}
+                                        </span>
+                                    )}
+                                </div>
+                                <span className="text-xs text-gray-600 font-medium group-hover:text-gray-900 transition-colors">{item.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-            <div className="mx-4 mt-4 bg-white rounded-lg p-5 border border-gray-200 shadow-sm">
-                <div className="grid grid-cols-4 gap-4">
-                    {[
-                        { label: "Wishlist", icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z", badge: wishlistItems.length > 0 ? wishlistItems.length : null },
-                        { label: "Orders", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", path: "/orders" },
-                        { label: "Wallet", icon: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" },
-                        { label: "Coupon", icon: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" },
-                    ].map((item) => (
-                        <button key={item.label} onClick={() => item.path && navigate(item.path)} className="flex flex-col items-center gap-2 relative">
-                            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                                </svg>
-                                {item.badge && (
-                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                                        {item.badge}
-                                    </span>
-                                )}
+                {/* Menu Items List */}
+                <div className="mx-4 mt-4 bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                    {menuItems.map((item, index) => (
+                        <button 
+                            key={item.label}
+                            onClick={() => item.path && navigate(item.path)}
+                            className={`w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group ${index !== menuItems.length - 1 ? 'border-b border-gray-100' : ''}`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+                                    </svg>
+                                </div>
+                                <span className="text-sm text-gray-700 font-medium group-hover:text-gray-900 transition-colors">{item.label}</span>
                             </div>
-                            <span className="text-[11px] text-gray-600 font-medium">{item.label}</span>
+                            <svg className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
                     ))}
                 </div>
-            </div>
-            <div className="mx-4 mt-4 bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-                {menuItems.map((item, index) => (
-                    <button 
-                        key={item.label}
-                        onClick={() => item.path && navigate(item.path)}
-                        className={`w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors ${index !== menuItems.length - 1 ? 'border-b border-gray-200' : ''}`}
+
+                {/* Sign Out Button */}
+                <div className="mx-4 mt-6 mb-8">
+                    <button
+                        onClick={handleSignOut}
+                        className="w-full bg-white text-red-600 py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 border border-gray-200 hover:bg-red-50 hover:border-red-200 transition-all shadow-sm"
                     >
-                        <div className="flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                            </svg>
-                            <span className="text-sm text-gray-900 font-medium">{item.label}</span>
-                        </div>
-                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
+                        Sign Out
                     </button>
-                ))}
-            </div>
-            <div className="mx-4 mt-6">
-                <button
-                    onClick={handleSignOut}
-                    className="w-full bg-white text-red-600 py-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 border border-gray-200 hover:bg-red-50 transition-colors"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Sign Out
-                </button>
+                </div>
             </div>
         </div>
     );

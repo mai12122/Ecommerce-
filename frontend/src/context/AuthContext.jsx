@@ -1,23 +1,22 @@
 
-import { createContext, useContext, useState, useEffect } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
+const readStoredUser = () => {
+    try {
+        const stored = localStorage.getItem("auth_user");
+        return stored ? JSON.parse(stored) : null;
+    } catch {
+        return null;
+    }
+};
+
 export const AuthProvider = ({ children }) => {
     const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL || "http://127.0.0.1:8000";
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem("auth_token"));
-
-    useEffect(() => {
-        const stored = localStorage.getItem("auth_user");
-        const storedToken = localStorage.getItem("auth_token");
-        if (stored) {
-            setUser(JSON.parse(stored));
-        }
-        if (storedToken) {
-            setToken(storedToken);
-        }
-    }, []);
+    const [user, setUser] = useState(() => readStoredUser());
+    const [token, setToken] = useState(() => localStorage.getItem("auth_token"));
 
     const updateProfile = async (updates) => {
         try {
@@ -62,7 +61,7 @@ export const AuthProvider = ({ children }) => {
             let data;
             try {
                 data = await res.json();
-            } catch (e) {
+            } catch {
                 const text = await res.text();
                 data = { error: text || 'Unexpected response' };
             }

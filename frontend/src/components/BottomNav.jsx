@@ -1,10 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { useCart } from "../context/CartContext";
 
 function BottomNav() {
-    const { cartItems } = useCart();
-    const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-
     return (
         <nav className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 shadow-lg z-50 md:hidden">
             <div className="flex justify-around items-center h-14 md:h-16">

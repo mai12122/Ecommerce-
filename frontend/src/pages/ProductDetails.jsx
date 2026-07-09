@@ -38,7 +38,7 @@ function ProductDetail() {
         setError(error.message);
         setLoading(false);
       }); 
-  }, [id]); 
+  }, [id, BASEURL]);
 
   if (loading) {
     return (

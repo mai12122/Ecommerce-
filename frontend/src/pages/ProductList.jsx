@@ -57,7 +57,7 @@ function ProductList() {
         localStorage.removeItem('show_modal_after_signin');
         setShowSigninMessage(true);
       }
-    } catch (e) {
+    } catch {
       // ignore storage errors
     }
   }, [categories.length]);

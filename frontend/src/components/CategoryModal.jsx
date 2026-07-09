@@ -1,12 +1,12 @@
-import { useState } from "react";
-
-function CategoryModal({ categories, selectedCategory, onSelectCategory, isOpen, onClose }) {
+function CategoryModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
     <>
       {/* Overlay */}
-      <div
+      <button
+        type="button"
+        aria-label="Close promo modal"
         className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
         onClick={onClose}
       />
@@ -25,7 +25,7 @@ function CategoryModal({ categories, selectedCategory, onSelectCategory, isOpen,
           justifyContent: 'center'
         }}
       >
-        <div className="rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 bg-gradient-to-br from-blue-600 to-purple-600 overflow-hidden w-full">
+        <div className="rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 bg-linear-to-br from-blue-600 to-purple-600 overflow-hidden w-full">
           {/* Close Button */}
           <button
             onClick={onClose}

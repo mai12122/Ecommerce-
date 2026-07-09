@@ -36,7 +36,6 @@ function CheckoutPage() {
   const cartTotal = total + shipping;
 
   const handleBack = () => navigate(-1);
-  const handleContinueShopping = () => navigate("/");
   const handleCloseSuccess = () => {
     setShowSuccess(false);
     navigate("/");
@@ -224,7 +223,7 @@ function CheckoutPage() {
               Order #{orderId}
             </p>
             <button
-              onClick={handleContinueShopping}
+              onClick={handleCloseSuccess}
               className="w-full bg-[#4E6793] text-white py-3.5 rounded-xl text-base font-semibold hover:bg-[#4E6793]/90 transition-colors"
             >
               Continue Shopping

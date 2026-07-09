@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, useMemo } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useAuth } from "./AuthContext.jsx";
 const CartContext = createContext();
 export const CartProvider = ({ children }) => {
@@ -24,11 +25,11 @@ export const CartProvider = ({ children }) => {
     };
 
     // Fetch Cart from backend 
-     const getAuthHeaders = () => {
+     const getAuthHeaders = useCallback(() => {
         return token ? { Authorization: `Token ${token}` } : {};
-    };
+    }, [token]);
 
-    const fetchCart = async () => {
+    const fetchCart = useCallback(async () => {
         if (!token) {
             setCartItems([]);
             setTotal(0);
@@ -52,10 +53,10 @@ export const CartProvider = ({ children }) => {
         } catch (error) {
             console.error('Error fetching cart:', error);
         }
-    };
+    }, [token, BASEURL]);
     useEffect(() => {
         fetchCart();
-    }, [token]);
+    }, [fetchCart]);
     const addToCart = async (product) => {
         if (!token) {
             console.warn('Unable to add to cart: user is not authenticated.');
@@ -153,7 +154,7 @@ export const CartProvider = ({ children }) => {
         setTotal(0);
     };
 
-    const value = useMemo(() => ({
+    const value = {
         cartItems,
         total,
         addToCart,
@@ -164,7 +165,7 @@ export const CartProvider = ({ children }) => {
         addToWishlist,
         removeFromWishlist,
         isWishlisted,
-    }), [cartItems, total, token, wishlistItems]);
+    };
 
     return (
         <CartContext.Provider value={value}>

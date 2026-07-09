@@ -16,7 +16,6 @@ const CATEGORY_IMAGES = {
 
 function ShopPage() {
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
@@ -24,26 +23,20 @@ function ShopPage() {
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${BASEURL}/api/categories/`).then((res) => {
+    fetch(`${BASEURL}/api/categories/`)
+      .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch categories");
         return res.json();
-      }),
-      fetch(`${BASEURL}/api/products/`).then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch products");
-        return res.json();
-      }),
-    ])
-      .then(([categoriesData, productsData]) => {
+      })
+      .then((categoriesData) => {
         setCategories(categoriesData);
-        setProducts(productsData);
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [BASEURL]);
 
   const getCategoryImage = (categoryName) => {
     return CATEGORY_IMAGES[categoryName] || null;
