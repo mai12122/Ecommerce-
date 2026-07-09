@@ -3,6 +3,7 @@ import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import ProductCard from "../components/ProductCard";
+import CategoryModal from "../components/CategoryModal";
 import GenZLogo from "../assets/GenZlogo.png";
 
 const COLORS = {
@@ -21,7 +22,9 @@ function ProductList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showSigninMessage, setShowSigninMessage] = useState(false);
-  const [searchParams] = useSearchParams(); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasShownModal, setHasShownModal] = useState(false);
+  const [searchParams] = useSearchParams();
   const location = useLocation();
   const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL;
   const { cartItems } = useCart();
@@ -72,6 +75,14 @@ function ProductList() {
 
     loadInitialData();
   }, [BASEURL]);
+
+  // Auto-open modal when user is authenticated and categories are loaded
+  useEffect(() => {
+    if (user && categories.length > 0 && !hasShownModal && selectedCategory === "All") {
+      setIsModalOpen(true);
+      setHasShownModal(true);
+    }
+  }, [user, categories, hasShownModal]);
 
   const isProductVisible = (product) => {
     const matchesCategory = selectedCategory === "All" || product.category?.name === selectedCategory;
@@ -181,39 +192,23 @@ function ProductList() {
         </div>
       </header>
 
-      <nav className="flex gap-3 px-5 py-4 overflow-x-auto no-scrollbar">
-        <button
-          onClick={() => {
-            setSelectedCategory("All");
-            globalThis.history.replaceState({}, '', globalThis.location.pathname);
-          }}
-          className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-            selectedCategory === "All"
-              ? `bg-[#E5E7EB] text-[#19233C] border-2 border-[#19233C]`
-              : `bg-[#2B3D5F] text-[#E5E7EB] hover:bg-[#4E6793]`
-          }`}
-        >
-          All
-        </button>
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => {
-              setSelectedCategory(category.name);
-              const newParams = new URLSearchParams(globalThis.location.search);
-              newParams.set("category", category.name);
-              globalThis.history.replaceState({}, '', `?${newParams.toString()}`);
-            }}
-            className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              selectedCategory === category.name
-                ? `bg-[#E5E7EB] text-[#19233C] border-2 border-[#19233C]`
-                : `bg-[#2B3D5F] text-[#E5E7EB] hover:bg-[#4E6793]`
-            }`}
-          >
-            {category.name}
-          </button>
-        ))}
-      </nav>
+      {/* Category Modal - Auto-opens on signin */}
+      <CategoryModal
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={(categoryName) => {
+          setSelectedCategory(categoryName);
+          if (categoryName === "All") {
+            globalThis.history.replaceState({}, "", globalThis.location.pathname);
+          } else {
+            const newParams = new URLSearchParams(globalThis.location.search);
+            newParams.set("category", categoryName);
+            globalThis.history.replaceState({}, "", `?${newParams.toString()}`);
+          }
+        }}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       <main className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-4 gap-4">
         {filteredProducts.length > 0 ? (
