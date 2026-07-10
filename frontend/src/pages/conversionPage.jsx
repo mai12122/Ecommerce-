@@ -4,7 +4,7 @@ function ConversionPage() {
     const navigate = useNavigate();
     
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#0F1420] ">
             <header className="bg-black pt-5 pb-4 px-4 sticky top-0 z-10 shadow-md">
                 <div className="flex justify-between items-center max-w-4xl mx-auto">
                     <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors">
@@ -36,7 +36,7 @@ function ConversionPage() {
                             <option>USD to GBP</option>
                             <option>EUR to USD</option>
                         </select>
-                        <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                        <button className="w-full bg-[#0F1420] text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
                             Convert
                         </button>
                     </div>

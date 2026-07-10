@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -34,6 +34,39 @@ function CheckoutPage() {
 
   const shipping = cartItems.length > 0 ? SHIPPING_COST : 0;
   const cartTotal = total + shipping;
+
+  // --- NEW: Auto-fill form with the most recently saved address ---
+  useEffect(() => {
+    const savedAddresses = localStorage.getItem("userAddresses");
+    if (savedAddresses) {
+      try {
+        const addresses = JSON.parse(savedAddresses);
+        if (addresses.length > 0) {
+          // Get the most recently added address
+          const latest = addresses[addresses.length - 1]; 
+          
+          // Combine address parts into a single string
+          const fullAddress = [
+            latest.addressLine1,
+            latest.addressLine2,
+            latest.city,
+            latest.state,
+            latest.zipCode,
+            latest.country
+          ].filter(Boolean).join(", ");
+
+          setForm(prev => ({
+            ...prev,
+            name: latest.fullName || prev.name,
+            phone: latest.phone || prev.phone,
+            address: fullAddress || prev.address,
+          }));
+        }
+      } catch (e) {
+        console.error("Error parsing saved addresses", e);
+      }
+    }
+  }, []);
 
   const handleBack = () => navigate(-1);
   const handleCloseSuccess = () => {
@@ -116,6 +149,7 @@ function CheckoutPage() {
             </span>
           </div>
         )}
+        
         <div className="flex items-center gap-3 bg-[#19233C] rounded-xl p-4 mb-6 border border-primary">
           <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
             <svg
@@ -142,7 +176,23 @@ function CheckoutPage() {
             </p>
           </div>
         </div>
+
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* --- NEW: Link to Address Page --- */}
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-sm text-[#4E6793] font-medium">Delivery Details</label>
+            <button 
+              type="button" 
+              onClick={() => navigate("/address")} 
+              className="text-xs text-[#4E6793] hover:text-[#E5E7EB] transition-colors flex items-center gap-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              Manage Addresses
+            </button>
+          </div>
+
           <div>
             <label className="text-sm text-[#4E6793] mb-2 block">Name</label>
             <input
@@ -194,6 +244,7 @@ function CheckoutPage() {
           </button>
         </form>
       </div>
+
       {showSuccess && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-5">
           <div className="bg-[#19233C] rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl border border-primary">
@@ -222,12 +273,22 @@ function CheckoutPage() {
             <p className="text-[#E5E7EB] font-semibold text-lg mb-6">
               Order #{orderId}
             </p>
-            <button
-              onClick={handleCloseSuccess}
-              className="w-full bg-[#4E6793] text-white py-3.5 rounded-xl text-base font-semibold hover:bg-[#4E6793]/90 transition-colors"
-            >
-              Continue Shopping
-            </button>
+            
+            {/* --- NEW: Links to Bill Page and Home --- */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate("/bill")}
+                className="flex-1 bg-[#0F1420] border border-[#4E6793]/30 text-[#E5E7EB] py-3.5 rounded-xl text-sm font-semibold hover:bg-[#2B3D5F]/30 transition-colors"
+              >
+                View Bill
+              </button>
+              <button
+                onClick={handleCloseSuccess}
+                className="flex-1 bg-[#4E6793] text-white py-3.5 rounded-xl text-sm font-semibold hover:bg-[#4E6793]/90 transition-colors"
+              >
+                Continue
+              </button>
+            </div>
           </div>
         </div>
       )}
