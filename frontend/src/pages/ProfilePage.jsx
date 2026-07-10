@@ -160,7 +160,7 @@ function ProfilePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-24">
+        <div className="min-h-screen bg-[#0F1420] pb-24">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -247,13 +247,12 @@ function ProfilePage() {
                         <button 
                             onClick={triggerFileInput}
                             disabled={isUploading}
-                            className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white shadow-lg bg-gray-100 flex-shrink-0 group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                            className="relative w-24 h-24 rounded-full overflow-visible ring-2 ring-white shadow-lg bg-gray-100 flex-shrink-0 group cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"                        >
                             {getAvatarDisplay() ? (
                                 <img 
                                     src={getAvatarDisplay()} 
                                     alt="Profile" 
-                                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                                    className="w-full h-full rounded-full object-cover transition-transform group-hover:scale-110"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
@@ -264,8 +263,7 @@ function ProfilePage() {
                             )}
                             
                             {/* Camera icon badge */}
-                            <div className="absolute bottom-0 right-0 bg-white text-blue-600 rounded-full p-1.5 shadow-md border border-gray-100 flex items-center justify-center transition-all group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <div className="absolute -bottom-1 right-1 bg-white text-blue-600 rounded-full p-1.5 shadow-md border border-gray-100 flex items-center justify-center transition-all group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white z-10">                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>

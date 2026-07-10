@@ -28,7 +28,7 @@ function WishlistPage() {
   // Empty state
   if (wishlistItems.length === 0) {
     return (
-      <div className="min-h-screen bg-white pb-24">
+      <div className="min-h-screen bg-[#0F1420] pb-24">
         {/* Header */}
         <div className="bg-black sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b border-gray-800">
           <button onClick={handleBack} className="p-1">
@@ -91,7 +91,7 @@ function WishlistPage() {
             </svg>
           </div>
 
-          <h2 className="text-2xl font-bold text-black mb-2">
+          <h2 className="text-2xl font-bold text-white mb-2">
             My Wishlist is Empty!
           </h2>
           <p className="text-gray-500 text-sm text-center mb-6">
@@ -110,7 +110,7 @@ function WishlistPage() {
 
   // Wishlist items
   return (
-    <div className="min-h-screen bg-white pb-24">
+    <div className="min-h-screen bg-[#0F1420] pb-24">
       {/* Header */}
       <div className="bg-black sticky top-0 z-40 flex items-center justify-between px-4 py-3 border-b border-gray-800">
         <button onClick={handleBack} className="p-1">

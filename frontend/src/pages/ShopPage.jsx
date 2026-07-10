@@ -65,7 +65,7 @@ function ShopPage() {
   }
 
   return (
-    <div className={`min-h-screen bg-white pb-20`}>
+    <div className="min-h-screen bg-[#0F1420] pb-20">
       {/* Header */}
       <header className="bg-black sticky top-0 z-40 border-b border-gray-800">
         <div className="px-4 md:px-5 py-2.5 md:py-3 flex justify-between items-center gap-3">
@@ -96,7 +96,7 @@ function ShopPage() {
 
       {/* Category Grid */}
       <div className="px-3 md:px-4 py-4 md:py-6">
-        <h2 className="text-xl md:text-2xl font-bold text-black mb-4 md:mb-6">Shop by Category</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">Shop by Category</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
           {categories.map((cat) => {
             const image = getCategoryImage(cat.name);
