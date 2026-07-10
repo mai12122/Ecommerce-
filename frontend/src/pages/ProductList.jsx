@@ -6,14 +6,6 @@ import ProductCard from "../components/ProductCard";
 import CategoryModal from "../components/CategoryModal";
 import NotificationBell from "../components/NotificationBell";
 
-const COLORS = {
-  bgDarkest: "#0F1420",    
-  bgPrimary: "#19233C",    
-  bgSecondary: "#2B3D5F", 
-  bgAccent: "#4E6793",    
-  textLight: "#E5E7EB",  
-};
-
 function ProductList() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -155,38 +147,56 @@ function ProductList() {
   const filteredProducts = products.filter(isProductVisible);
 
   if (loading) {
-    return <div className="text-center mt-10 text-[#E5E7EB]">Loading products...</div>;
+    return (
+      <div className="min-h-screen bg-[#0F1420] flex flex-col items-center justify-center">
+        <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-400 text-sm font-medium">Loading products...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center mt-10 text-red-400">Error: {error}</div>;
+    return (
+      <div className="min-h-screen bg-[#0F1420] flex flex-col items-center justify-center">
+        <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 max-w-sm text-center backdrop-blur-xl">
+          <p className="text-red-400 text-sm font-medium">Error: {error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-white pb-20 md:pb-0">
+    <div className="min-h-screen bg-[#0F1420] pb-20 md:pb-0 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]" />
+      </div>
+
       {toast && (
-        <div className="fixed right-4 top-20 z-50 max-w-sm rounded-2xl border border-amber-200 bg-white px-4 py-3 shadow-xl">
-          <p className="text-sm font-semibold text-gray-900">{toast.title}</p>
-          <p className="mt-1 text-sm text-gray-600">{toast.message}</p>
+        <div className="fixed right-4 top-20 z-50 max-w-sm rounded-2xl bg-[#19233C]/90 backdrop-blur-xl border border-white/10 px-4 py-3 shadow-2xl animate-fade-in-down">
+          <p className="text-sm font-semibold text-white">{toast.title}</p>
+          <p className="mt-1 text-sm text-gray-300">{toast.message}</p>
         </div>
       )}
 
       {showSigninMessage && (
-        <div className="fixed left-1/2 top-5 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-lg bg-emerald-600 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg">
+        <div className="fixed left-1/2 top-5 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-5 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-purple-500/30 border border-white/10 animate-fade-in-down">
           Signed in successfully. Welcome back!
         </div>
       )}
       
       {/* Header */}
-      <header className="bg-black sticky top-0 z-40 border-b border-gray-800">
-        <div className="px-4 md:px-5 py-2.5 md:py-3 flex justify-between items-center gap-3">
-          <h1 className="text-lg md:text-xl font-bold text-white tracking-tight">GENZ</h1>
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-40 bg-[#0F1420]/80 backdrop-blur-xl border-b border-white/5 relative">
+        <div className="px-4 md:px-6 py-3 md:py-4 flex justify-between items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent tracking-tight">GENZ</h1>
+          <div className="flex items-center gap-4">
             <NotificationBell />
-            <Link to="/cart" className="relative text-white hover:text-gray-400 transition-colors flex-shrink-0">
+            <Link to="/cart" className="relative text-gray-300 hover:text-white transition-all duration-300 hover:scale-110 flex-shrink-0 group">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -199,7 +209,7 @@ function ProductList() {
                 />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                <span className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform border border-white/20">
                   {cartCount}
                 </span>
               )}
@@ -208,11 +218,11 @@ function ProductList() {
         </div>
 
         {/* Search Bar */}
-        <div className="px-4 md:px-5 pb-2.5 md:pb-3">
-          <div className="flex items-center bg-gray-100 rounded-full px-3 md:px-4 py-2 md:py-2.5 gap-2">
+        <div className="px-4 md:px-6 pb-3 md:pb-4">
+          <div className="flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2.5 gap-3 focus-within:border-purple-500/50 focus-within:ring-2 focus-within:ring-purple-500/20 transition-all">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 md:h-5 w-4 md:w-5 text-gray-400 shrink-0"
+              className="h-5 w-5 text-gray-400 shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -226,16 +236,16 @@ function ProductList() {
             </svg>
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 outline-none text-sm bg-transparent placeholder-gray-500 text-gray-900"
+              className="flex-1 outline-none text-sm bg-transparent placeholder-gray-500 text-white"
             />
           </div>
         </div>
 
         {/* Category Tabs */}
-        <div className="px-4 md:px-5 pb-2.5 md:pb-3 flex gap-2 overflow-x-auto scrollbar-hide">
+        <div className="px-4 md:px-6 pb-3 md:pb-4 flex gap-2 overflow-x-auto scrollbar-hide">
           {["All", ...categories.map(cat => cat.name)].map((cat) => (
             <button
               key={cat}
@@ -249,10 +259,10 @@ function ProductList() {
                   globalThis.history.replaceState({}, "", `?${newParams.toString()}`);
                 }
               }}
-              className={`whitespace-nowrap px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors flex-shrink-0 ${
+              className={`whitespace-nowrap px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 flex-shrink-0 border ${
                 selectedCategory === cat
-                  ? "bg-black text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg shadow-purple-500/20 border-white/10 scale-105"
+                  : "bg-white/5 text-gray-300 hover:bg-white/10 border-white/10 hover:scale-105"
               }`}
             >
               {cat}
@@ -280,21 +290,49 @@ function ProductList() {
       />
 
       {/* Products Grid */}
-      <main className="px-3 md:px-4 py-4 md:py-6">
+      <main className="px-3 md:px-6 py-4 md:py-6 relative z-10">
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 md:py-16">
-            <p className="text-gray-500 text-sm md:text-base">
+          <div className="text-center py-12 md:py-16 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <p className="text-gray-400 text-sm md:text-base font-medium">
               No products found{selectedCategory !== "All" ? ` in "${selectedCategory}"` : ""}.
             </p>
           </div>
         )}
       </main>
+
+      {/* Custom Styles for Animations */}
+      <style>{`
+        @keyframes fade-in-down {
+          0% { opacity: 0; transform: translateY(-20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+          animation: fade-in-down 0.5s ease-out;
+        }
+        .delay-1000 {
+          animation-delay: 1s;
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scrollbar-hide {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+      `}</style>
     </div>
   );
 }
