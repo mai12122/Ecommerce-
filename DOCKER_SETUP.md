@@ -5,10 +5,11 @@ Run the whole project (PostgreSQL + Django backend + React frontend) with Docker
 ## Prerequisites
 - Docker Desktop installed and running
 
-## Environment File
-Use a single `.env` file in the project root.
+## Environment Files
+Use separate env files for each app:
 
-1. Copy `.env.example` to `.env`.
+1. Copy `backend/.env.example` to `backend/.env`.
+2. Copy `frontend/.env.example` to `frontend/.env`.
 2. Update values only if needed.
 
 ## Start Project

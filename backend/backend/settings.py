@@ -18,8 +18,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = BASE_DIR.parent
 
-# Prefer the single root .env file, with fallback for environment-provided vars.
-load_dotenv(ROOT_DIR / '.env')
+# Prefer backend/.env for backend configuration, with fallback to real environment variables.
+load_dotenv(ROOT_DIR / 'backend' / '.env')
 
 # DEBUG must be defined before using it in SECRET_KEY fallback logic
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'

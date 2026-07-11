@@ -16,10 +16,17 @@ function SignInPage() {
 
     useEffect(() => {
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-        if (!clientId) return;
+        if (!clientId) {
+            setError("Google sign-in is not configured for this app.");
+            return;
+        }
 
         const initializeButton = () => {
-            if (!window.google?.accounts?.id || !googleButtonRef.current) return;
+            if (!window.google?.accounts?.id || !googleButtonRef.current) {
+                setError("Google sign-in script could not be loaded. Please refresh the page and try again.");
+                return;
+            }
+
             window.google.accounts.id.initialize({
                 client_id: clientId,
                 callback: async (response) => {
@@ -28,10 +35,12 @@ function SignInPage() {
                         try { localStorage.setItem('show_modal_after_signin', '1'); } catch (storageError) { console.warn('Unable to persist signin flag', storageError); }
                         navigate("/", { state: { showSigninSuccess: true } });
                     } else {
+                        setError(result.error || 'Google sign-in failed');
                         console.warn('Google sign-in failed', result.error);
                     }
                 },
             });
+
             window.google.accounts.id.renderButton(googleButtonRef.current, {
                 theme: 'filled_black',
                 size: 'large',
@@ -47,6 +56,7 @@ function SignInPage() {
             return;
         }
         if (existingScript) {
+            existingScript.addEventListener('load', initializeButton, { once: true });
             return;
         }
 
@@ -56,6 +66,7 @@ function SignInPage() {
         script.async = true;
         script.defer = true;
         script.onload = initializeButton;
+        script.onerror = () => setError("Google sign-in script failed to load.");
         document.body.appendChild(script);
     }, [navigate, signInWithGoogle]);
 

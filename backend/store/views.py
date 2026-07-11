@@ -317,7 +317,8 @@ def google_oauth(request):
     if payload.get('aud') and settings.VITE_GOOGLE_CLIENT_ID and payload.get('aud') != settings.VITE_GOOGLE_CLIENT_ID:
         return Response({'error': 'Google token audience is invalid'}, status=400)
 
-    if payload.get('email_verified') is not True:
+    email_verified = payload.get('email_verified')
+    if str(email_verified).lower() != 'true':
         return Response({'error': 'Google account email must be verified'}, status=400)
 
     email = (payload.get('email') or '').strip().lower()

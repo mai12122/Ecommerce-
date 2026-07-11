@@ -28,7 +28,8 @@ def verify_google_jwt(token):
             google_requests.Request(),
             settings.VITE_GOOGLE_CLIENT_ID,
         )
-        if not payload.get('email_verified'):
+        email_verified = payload.get('email_verified')
+        if str(email_verified).lower() != 'true':
             raise AuthenticationFailed('Google token email is not verified')
         if not payload.get('email'):
             raise AuthenticationFailed('Google token payload is missing an email')

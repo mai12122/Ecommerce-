@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ id_token: idToken }),
+                body: JSON.stringify({ id_token: idToken, credential: idToken }),
             });
             const data = await res.json();
             if (res.ok) {
