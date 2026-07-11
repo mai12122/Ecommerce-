@@ -94,8 +94,9 @@ function CheckoutPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${token}`,
+          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify({
           name: form.name,
           phone: form.phone,

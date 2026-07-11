@@ -98,8 +98,9 @@ function ProductList() {
         const authToken = user?.token || localStorage.getItem("auth_token");
         const res = await fetch(`${BASEURL}/api/notifications/`, {
           headers: {
-            Authorization: `Token ${authToken}`,
+            Authorization: authToken ? `Bearer ${authToken}` : undefined,
           },
+          credentials: "include",
         });
 
         if (!res.ok) return;

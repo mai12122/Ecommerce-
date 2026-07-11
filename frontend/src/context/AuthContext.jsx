@@ -2,6 +2,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState } from "react";
 
+const COOKIE_NAME = "auth_token";
+
 const AuthContext = createContext();
 
 const readStoredUser = () => {
@@ -13,16 +15,25 @@ const readStoredUser = () => {
     }
 };
 
+const persistSession = (payload) => {
+    if (payload?.token) {
+        localStorage.setItem(COOKIE_NAME, payload.token);
+    }
+    if (payload) {
+        localStorage.setItem("auth_user", JSON.stringify(payload));
+    }
+};
+
 export const AuthProvider = ({ children }) => {
     const BASEURL = import.meta.env.VITE_DJANGO_BASE_URL || "http://127.0.0.1:8000";
     const [user, setUser] = useState(() => readStoredUser());
-    const [token, setToken] = useState(() => localStorage.getItem("auth_token"));
+    const [token, setToken] = useState(() => localStorage.getItem(COOKIE_NAME));
 
     const updateProfile = async (updates) => {
         try {
             // If avatar is a File, send multipart/form-data so backend can handle file upload.
             const headers = {};
-            if (token) headers['Authorization'] = `Token ${token}`;
+            if (token) headers['Authorization'] = `Bearer ${token}`;
 
             let res;
             // Backend expects avatar as a data URL (string starting with data:image/).
@@ -90,6 +101,7 @@ export const AuthProvider = ({ children }) => {
             const res = await fetch(`${BASEURL}/api/auth/signin/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ email, password }),
             });
             const data = await res.json();
@@ -97,13 +109,12 @@ export const AuthProvider = ({ children }) => {
                 if (data.avatar && !data.avatar.startsWith('http')) {
                     data.avatar = `${BASEURL}${data.avatar}`;
                 }
-                // store token separately for API requests
                 if (data.token) {
-                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem(COOKIE_NAME, data.token);
                     setToken(data.token);
                 }
+                persistSession(data);
                 setUser(data);
-                localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };
             }
             return { success: false, error: data.error || "Invalid email or password" };
@@ -118,6 +129,7 @@ export const AuthProvider = ({ children }) => {
             const res = await fetch(`${BASEURL}/api/auth/google/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ id_token: idToken }),
             });
             const data = await res.json();
@@ -126,11 +138,11 @@ export const AuthProvider = ({ children }) => {
                     data.avatar = `${BASEURL}${data.avatar}`;
                 }
                 if (data.token) {
-                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem(COOKIE_NAME, data.token);
                     setToken(data.token);
                 }
+                persistSession(data);
                 setUser(data);
-                localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };
             }
             return { success: false, error: data.error || "Google sign-in failed" };
@@ -144,6 +156,7 @@ export const AuthProvider = ({ children }) => {
             const res = await fetch(`${BASEURL}/api/auth/signup/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ name, email, phone, password }),
             });
             const data = await res.json();
@@ -152,11 +165,11 @@ export const AuthProvider = ({ children }) => {
                     data.avatar = `${BASEURL}${data.avatar}`;
                 }
                 if (data.token) {
-                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem(COOKIE_NAME, data.token);
                     setToken(data.token);
                 }
+                persistSession(data);
                 setUser(data);
-                localStorage.setItem("auth_user", JSON.stringify(data));
                 return { success: true };
             }
             // Handle validation errors from backend
@@ -183,7 +196,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setToken(null);
         localStorage.removeItem("auth_user");
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem(COOKIE_NAME);
     };
 
     return (

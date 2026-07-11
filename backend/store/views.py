@@ -1,6 +1,9 @@
 import base64
 import uuid
+import jwt
+from datetime import datetime, timedelta, timezone
 from django.core.files.base import ContentFile
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.throttling import ScopedRateThrottle
@@ -22,6 +25,57 @@ from .serializers import (
     OrderCreateSerializer,
     NotificationSerializer,
 )
+
+
+def _issue_jwt(user):
+    payload = {
+        'user_id': user.id,
+        'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=settings.JWT_ACCESS_TOKEN_LIFETIME_SECONDS),
+        'iat': datetime.now(tz=timezone.utc),
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256', headers={'typ': 'JWT'})
+
+
+
+def _set_auth_cookie(response, token):
+    response.set_cookie(
+        key=settings.JWT_AUTH_COOKIE,
+        value=token,
+        httponly=True,
+        secure=not settings.DEBUG,
+        samesite='Lax' if not settings.DEBUG else 'None',
+        max_age=settings.JWT_ACCESS_TOKEN_LIFETIME_SECONDS,
+        path='/',
+    )
+
+
+def _build_auth_response(user, profile=None, status=200):
+    if profile is None:
+        try:
+            profile = user.userprofile
+        except UserProfile.DoesNotExist:
+            profile = None
+
+    phone = ''
+    address = ''
+    avatar_url = ''
+    if profile is not None:
+        phone = profile.phone_number
+        address = profile.address
+        avatar_url = get_avatar_url(profile)
+
+    token = _issue_jwt(user)
+    response = Response({
+        'id': user.id,
+        'name': user.get_full_name(),
+        'email': user.email,
+        'phone': phone,
+        'address': address,
+        'avatar': avatar_url,
+        'token': token,
+    }, status=status)
+    _set_auth_cookie(response, token)
+    return response
 
 
 def save_base64_avatar(profile, base64_string):
@@ -207,49 +261,10 @@ def signup(request):
     user = serializer.save()
     profile = UserProfile.objects.get(user=user)
     logger.info('User signup', extra={'user_id': user.id, 'email': user.email})
-    # create auth token for SPA usage
-    token, _ = Token.objects.get_or_create(user=user)
-
-    return Response({
-        'id': user.id,
-        'name': user.get_full_name(),
-        'email': user.email,
-        'phone': profile.phone_number,
-        'address': profile.address,
-        'avatar': get_avatar_url(profile),
-        'token': token.key,
-    }, status=201)
+    return _build_auth_response(user, profile, status=201)
 
 
 signup.throttle_scope = 'login'
-
-
-def _build_auth_response(user, profile=None):
-    if profile is None:
-        try:
-            profile = user.userprofile
-        except UserProfile.DoesNotExist:
-            profile = None
-
-    phone = ''
-    address = ''
-    avatar_url = ''
-    if profile is not None:
-        phone = profile.phone_number
-        address = profile.address
-        avatar_url = get_avatar_url(profile)
-
-    token, _ = Token.objects.get_or_create(user=user)
-
-    return Response({
-        'id': user.id,
-        'name': user.get_full_name(),
-        'email': user.email,
-        'phone': phone,
-        'address': address,
-        'avatar': avatar_url,
-        'token': token.key,
-    })
 
 
 @api_view(['POST'])
@@ -265,6 +280,10 @@ def signin(request):
         return Response({'error': 'Email and password are required'}, status=400)
 
     user = authenticate(username=email, password=password)
+    if user is None:
+        candidate = User.objects.filter(email__iexact=email).order_by('id').first()
+        if candidate is not None:
+            user = authenticate(username=candidate.username, password=password)
 
     if user is None:
         logger = logging.getLogger(__name__)
@@ -294,6 +313,12 @@ def google_oauth(request):
         payload = response.json()
     except requests.RequestException:
         return Response({'error': 'Unable to verify Google token'}, status=400)
+
+    if payload.get('aud') and settings.VITE_GOOGLE_CLIENT_ID and payload.get('aud') != settings.VITE_GOOGLE_CLIENT_ID:
+        return Response({'error': 'Google token audience is invalid'}, status=400)
+
+    if payload.get('email_verified') is not True:
+        return Response({'error': 'Google account email must be verified'}, status=400)
 
     email = (payload.get('email') or '').strip().lower()
     if not email:

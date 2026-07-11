@@ -26,7 +26,7 @@ export const CartProvider = ({ children }) => {
 
     // Fetch Cart from backend 
      const getAuthHeaders = useCallback(() => {
-        return token ? { Authorization: `Token ${token}` } : {};
+        return token ? { Authorization: `Bearer ${token}` } : {};
     }, [token]);
 
     const fetchCart = useCallback(async () => {
@@ -39,6 +39,7 @@ export const CartProvider = ({ children }) => {
         try {
             const res = await fetch(`${BASEURL}/api/cart/`, {
                 headers: getAuthHeaders(),
+                credentials: "include",
             });
 
             if (!res.ok) {
@@ -70,6 +71,7 @@ export const CartProvider = ({ children }) => {
                     'Content-Type': 'application/json',
                     ...getAuthHeaders(),
                 },
+                credentials: "include",
                 body: JSON.stringify({ product_id: product }),
             });
 
@@ -107,6 +109,7 @@ export const CartProvider = ({ children }) => {
                     'Content-Type': 'application/json',
                     ...getAuthHeaders(),
                 },
+                credentials: "include",
                 body: JSON.stringify({ item_id: itemId }),
             });
 
@@ -136,6 +139,7 @@ export const CartProvider = ({ children }) => {
             const res = await fetch(`${BASEURL}/api/cart/update/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+                credentials: "include",
                 body: JSON.stringify({ item_id: itemId, quantity }),
             });
 

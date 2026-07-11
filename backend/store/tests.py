@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
@@ -73,11 +74,29 @@ class StoreAPITestCase(TestCase):
         self.assertEqual(notification.title, 'New discount available')
         self.assertIn('20%', notification.message)
 
+    def test_signin_sets_jwt_cookie_and_allows_cookie_auth(self):
+        user = User.objects.create_user(username='cookie-user', email='cookie@example.com', password='password123')
+        response = self.client.post(reverse('signin'), {
+            'email': 'cookie@example.com',
+            'password': 'password123',
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('auth_token', response.cookies)
+        self.assertTrue(response.cookies['auth_token']['httponly'])
+
+        cookie_client = APIClient()
+        cookie_client.cookies.load(response.cookies)
+        cart_response = cookie_client.get(reverse('get_cart'))
+        self.assertEqual(cart_response.status_code, status.HTTP_200_OK)
+
     @patch('store.views.requests.get')
     def test_google_oauth_signin_creates_user_and_returns_token(self, mock_get):
         mock_get.return_value.json.return_value = {
             'sub': 'google-user-1',
             'email': 'google@example.com',
+            'email_verified': True,
+            'aud': settings.VITE_GOOGLE_CLIENT_ID or 'test-client-id',
             'name': 'Google User',
             'picture': 'https://example.com/avatar.png',
         }
@@ -91,3 +110,16 @@ class StoreAPITestCase(TestCase):
         self.assertEqual(response.data['email'], 'google@example.com')
         self.assertIn('token', response.data)
         self.assertTrue(User.objects.filter(email='google@example.com').exists())
+
+    @patch('store.authentication.id_token.verify_oauth2_token')
+    def test_google_oauth_token_without_verified_email_is_rejected(self, mock_verify):
+        mock_verify.return_value = {
+            'sub': 'google-user-2',
+            'email': 'google-unverified@example.com',
+            'email_verified': False,
+        }
+
+        self.client.cookies['JWT-SESSION'] = 'fake-google-token'
+        response = self.client.get(reverse('get_cart'))
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

@@ -20,8 +20,9 @@ function OrderHistory() {
 
         const res = await fetch(`${BASEURL}/api/orders/`, {
           headers: {
-            Authorization: `Token ${token}`,
+            Authorization: `Bearer ${token}`,
           },
+          credentials: "include",
         });
         if (!res.ok) {
           const errorText = await res.text();

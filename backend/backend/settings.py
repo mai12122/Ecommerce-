@@ -155,9 +155,8 @@ STATIC_URL = 'static/'
 
 # Django REST Framework
 REST_FRAMEWORK = {
-    # Use token auth for API requests in the SPA
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'store.authentication.JWTCookieAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
@@ -177,6 +176,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 CORS_ALLOW_CREDENTIALS = True
+JWT_AUTH_COOKIE = 'auth_token'
+JWT_ACCESS_TOKEN_LIFETIME_SECONDS = 60 * 60 * 24 * 7
+VITE_GOOGLE_CLIENT_ID = os.getenv('VITE_GOOGLE_CLIENT_ID', '')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
