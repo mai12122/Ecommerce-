@@ -53,9 +53,6 @@ function SignInPage() {
         const script = document.createElement("script");
         script.id = "google-identity-script";
         script.src = "https://accounts.google.com/gsi/client";
-        // Add SRI and crossorigin for improved integrity checks
-        script.integrity = "sha384-sw9AdhzJakPBlzCOAMGXgznOau2Nk8CMVVbcddTnxcB4GQThKcr2NOFplN4IxBqa";
-        script.crossOrigin = "anonymous";
         script.async = true;
         script.defer = true;
         script.onload = initializeButton;

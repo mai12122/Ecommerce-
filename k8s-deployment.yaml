@@ -12,7 +12,6 @@ spec:
       labels:
         app: ecommerce-db
     spec:
-      automountServiceAccountToken: false
       containers:
         - name: db
           image: postgres:16-alpine
@@ -25,12 +24,6 @@ spec:
               value: admin
           ports:
             - containerPort: 5432
-          resources:
-            requests:
-              memory: "256Mi"
-            limits:
-              memory: "512Mi"
-              ephemeral-storage: "1Gi"
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
@@ -63,7 +56,6 @@ spec:
       labels:
         app: ecommerce-backend
     spec:
-      automountServiceAccountToken: false
       containers:
         - name: backend
           image: ecommerce-backend:local
@@ -88,12 +80,6 @@ spec:
               value: localhost,127.0.0.1
           ports:
             - containerPort: 8000
-          resources:
-            requests:
-              memory: "256Mi"
-            limits:
-              memory: "512Mi"
-              ephemeral-storage: "512Mi"
 apiVersion: v1
 kind: Service
 metadata:
@@ -121,7 +107,6 @@ spec:
       labels:
         app: ecommerce-frontend
     spec:
-      automountServiceAccountToken: false
       containers:
         - name: frontend
           image: ecommerce-frontend:local
@@ -130,12 +115,6 @@ spec:
               value: http://127.0.0.1:8000
           ports:
             - containerPort: 5173
-          resources:
-            requests:
-              memory: "128Mi"
-            limits:
-              memory: "256Mi"
-              ephemeral-storage: "256Mi"
 ---
 apiVersion: v1
 kind: Service
