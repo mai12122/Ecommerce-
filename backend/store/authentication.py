@@ -74,7 +74,12 @@ class JWTCookieAuthentication(BaseAuthentication):
         if not django_token:
             jwt_session = request.COOKIES.get('JWT-SESSION')
             if jwt_session and jwt_session.count('.') == 2:
-                google_token = jwt_session
+                try:
+                    header = jwt.get_unverified_header(jwt_session)
+                    if header.get('alg', '').upper() == 'RS256':
+                        google_token = jwt_session
+                except Exception:
+                    google_token = None
 
         # 3) Optional header fallback (used by tests / non-cookie clients)
         if not django_token and not google_token:
@@ -89,7 +94,11 @@ class JWTCookieAuthentication(BaseAuthentication):
 
         # Decode/verify
         if google_token:
-            payload = verify_google_jwt(google_token)
+            try:
+                payload = verify_google_jwt(google_token)
+            except AuthenticationFailed:
+                return None
+
             user_id = payload.get('user_id')
             if user_id:
                 # Extremely unlikely for Google tokens, but support it if present
@@ -115,7 +124,11 @@ class JWTCookieAuthentication(BaseAuthentication):
             return user, google_token
 
         # Backend token path
-        payload = verify_django_jwt(django_token)
+        try:
+            payload = verify_django_jwt(django_token)
+        except AuthenticationFailed:
+            return None
+
         user_id = payload.get('user_id')
         if not user_id:
             raise AuthenticationFailed('Invalid token payload')
