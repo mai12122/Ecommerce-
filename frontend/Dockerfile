@@ -7,6 +7,8 @@ RUN npm install
 
 COPY . /app
 
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+ENTRYPOINT ["/app/entrypoint.sh"]

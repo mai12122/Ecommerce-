@@ -34,7 +34,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DEBUG: ${DEBUG:-True}
       SECRET_KEY: ${SECRET_KEY:-dev-secret-key}
-      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     ports:
       - "8000:8000"
@@ -51,6 +51,7 @@ services:
       CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING:-true}
       CHOKIDAR_INTERVAL: ${CHOKIDAR_INTERVAL:-100}
       VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+      VITE_DJANGO_BASE_URL: ${VITE_DJANGO_BASE_URL:-http://localhost:8000}
     depends_on:
       - backend
     ports:

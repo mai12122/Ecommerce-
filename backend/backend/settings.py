@@ -42,7 +42,7 @@ if not SECRET_KEY:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-allowed_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+allowed_hosts = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts.split(',') if host.strip()]
 
 
@@ -174,7 +174,14 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://frontend:5173",
 ]
+# In development, allow docker network traffic
+if DEBUG:
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^http://172\.20\..*",
+        r"^http://172\.17\..*",
+    ]
 CORS_ALLOW_CREDENTIALS = True
 JWT_AUTH_COOKIE = 'auth_token'
 JWT_ACCESS_TOKEN_LIFETIME_SECONDS = 60 * 60 * 24 * 7

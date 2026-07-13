@@ -14,4 +14,6 @@ class ContentSecurityPolicyMiddleware:
             "frame-src 'self' https://accounts.google.com; form-action 'self'",
         )
         response.setdefault('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
+        # Allow cross-origin postMessage for Google OAuth
+        response.setdefault('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
         return response
